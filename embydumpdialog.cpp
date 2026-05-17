@@ -61,8 +61,8 @@ void EmbyDumpDialog::onSelect() {
     QString dir = QFileDialog::getExistingDirectory(
         this,
         tr("Select Directory"),
-        ui->edt_path->text()
-        );
+        ui->edt_path->text(),
+        QFileDialog::DontUseNativeDialog);
     if (!dir.isEmpty()) {
         ui->edt_path->setText(dir);
     }
