@@ -1,0 +1,11 @@
+# Promote Go
+*.go linguist-language=Go
+
+# De-emphasize C++
+*.cpp linguist-vendored=true
+*.hpp linguist-vendored=true
+*.h   linguist-vendored=true
+
+# Ignore build scripts
+*.bat linguist-vendored=true
+

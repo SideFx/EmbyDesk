@@ -1,0 +1,31 @@
+<RCC>
+    <qresource prefix="/toolbar">
+        <file>assets/mainTB_Database.svg</file>
+        <file>assets/mainTB_Export.svg</file>
+        <file>assets/mainTB_Info.svg</file>
+        <file>assets/mainTB_Login.svg</file>
+        <file>assets/mainTB_Movie.svg</file>
+        <file>assets/mainTB_Quit.svg</file>
+        <file>assets/mainTB_Settings.svg</file>
+        <file>assets/mainTB_Person.svg</file>
+        <file>assets/mainTB_EmbyDump.svg</file>
+        <file>assets/mainTB_EmbyOffline.svg</file>
+    </qresource>
+    <qresource prefix="/bitmaps">
+        <file>assets/emby.png</file>
+        <file>assets/embylogo.png</file>
+    </qresource>
+    <qresource prefix="/coll">
+        <file>assets/type_HomeVideo.svg</file>
+        <file>assets/type_Movie.svg</file>
+        <file>assets/type_Music.svg</file>
+        <file>assets/type_MusicVideo.svg</file>
+        <file>assets/type_Series.svg</file>
+        <file>assets/type_Folder.svg</file>
+    </qresource>
+    <qresource prefix="/status">
+        <file>assets/status_Error.svg</file>
+        <file>assets/status_Information.svg</file>
+        <file>assets/status_Warning.svg</file>
+    </qresource>
+</RCC>

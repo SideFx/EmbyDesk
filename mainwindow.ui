@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSettings">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/toolbar/assets/mainTB_Settings.svg</normaloff>:/toolbar/assets/mainTB_Settings.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::PreferencesRole</enum>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/toolbar/assets/mainTB_Info.svg</normaloff>:/toolbar/assets/mainTB_Info.svg</iconset>
+   </property>
+   <property name="text">
+    <string>About</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::AboutRole</enum>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/toolbar/assets/mainTB_Quit.svg</normaloff>:/toolbar/assets/mainTB_Quit.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="toolTip">
+    <string>Quit application</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::QuitRole</enum>
+   </property>
+  </action>
+  <action name="actionLogin">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/toolbar/assets/mainTB_Person.svg</normaloff>:/toolbar/assets/mainTB_Person.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Login</string>
+   </property>
+   <property name="toolTip">
+    <string>Login to Emby server</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionRetrieve">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/toolbar/assets/mainTB_Database.svg</normaloff>:/toolbar/assets/mainTB_Database.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Retrieve collection</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/toolbar/assets/mainTB_Export.svg</normaloff>:/toolbar/assets/mainTB_Export.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Export</string>
+   </property>
+   <property name="toolTip">
+    <string>Export to Excel</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionDump">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/toolbar/assets/mainTB_EmbyDump.svg</normaloff>:/toolbar/assets/mainTB_EmbyDump.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Dump Emby Collections</string>
+   </property>
+   <property name="toolTip">
+    <string>Dump Emby Collections to local Database</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionOffline">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/toolbar/assets/mainTB_EmbyOffline.svg</normaloff>:/toolbar/assets/mainTB_EmbyOffline.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Offline Mode</string>
+   </property>
+   <property name="toolTip">
+    <string>Offline Mode (Use local Database)</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,0 +1,3 @@
+[submodule "extern/JBEmbyAPI"]
+	path = extern/JBEmbyAPI
+	url = https://github.com/SideFx/JBEmbyAPI
