@@ -41,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 MainWindow::~MainWindow() {
     delete ui;
+    m_sqlReader.closeDBConnection();
 }
 
 void MainWindow::createToolBar() {
@@ -519,7 +520,6 @@ void MainWindow::resizeEvent(QResizeEvent *e) {
 
 void MainWindow::closeEvent(QCloseEvent *e) {
     saveSettings();
-    m_sqlReader.closeDBConnection();
     e->accept();
 }
 
