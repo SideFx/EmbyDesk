@@ -65,7 +65,14 @@ target_link_libraries(EmbyDesk
         QXlsx::QXlsx
 )
 
+if(APPLE)
+    set(ENV{PATH} "/usr/local/go/bin:$ENV{PATH}")
+endif()
+
+
 add_dependencies(EmbyDesk JBEmbyAPI)
+
+message("PATH during CMake: $ENV{PATH}")
 
 add_custom_command(TARGET EmbyDesk POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different

@@ -60,7 +60,7 @@ void MainWindow::createToolBar() {
     m_mainToolBar->addAction(ui->actionLogin);
     m_mainToolBar->addSeparator();
     m_collectionBox = new QComboBox;
-    m_collectionBox->setMinimumWidth(150);
+    m_collectionBox->setMinimumWidth(180);
     m_mainToolBar->addWidget(m_collectionBox);
     m_mainToolBar->addSeparator();
     m_mainToolBar->addAction(ui->actionRetrieve);

@@ -12,6 +12,7 @@
 *.rej
 *.so
 *.so.*
+*.dylib
 *_pch.h.cpp
 *_resource.rc
 *.qm

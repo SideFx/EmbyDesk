@@ -1,3 +1,4 @@
+
 # Pfade
 set(GO_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)   # JBEmbyAPI (go.mod)
 set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/bin)
@@ -15,13 +16,26 @@ endif()
 
 # Custom command: Go-Library bauen
 file(GLOB GO_SOURCES ${GO_SRC_DIR}/export/*.go)
-add_custom_command(
-    OUTPUT ${OUTPUT_DIR}/${GO_LIB_FILE}
-    COMMAND go build -buildmode=c-shared -o ${OUTPUT_DIR}/${GO_LIB_FILE} ${GO_SRC_DIR}/export
-    WORKING_DIRECTORY ${GO_SRC_DIR}
-    DEPENDS ${GO_SOURCES}
-    COMMENT "Building Go shared library..."
+
+# cmake did not find the go binary under macOS (although it's in /etc/paths)
+# looks clumsy, but at least it works
+if(APPLE)
+    add_custom_command(
+        OUTPUT ${OUTPUT_DIR}/${GO_LIB_FILE}
+        COMMAND /usr/local/go/bin/go build -buildmode=c-shared -o ${OUTPUT_DIR}/${GO_LIB_FILE} ${GO_SRC_DIR}/export
+        WORKING_DIRECTORY ${GO_SRC_DIR}
+        DEPENDS ${GO_SOURCES}
+        COMMENT "Building Go shared library..."
+    )
+else()
+    add_custom_command(
+        OUTPUT ${OUTPUT_DIR}/${GO_LIB_FILE}
+        COMMAND go build -buildmode=c-shared -o ${OUTPUT_DIR}/${GO_LIB_FILE} ${GO_SRC_DIR}/export
+        WORKING_DIRECTORY ${GO_SRC_DIR}
+        DEPENDS ${GO_SOURCES}
+        COMMENT "Building Go shared library..."
 )
+endif()
 
 add_custom_target(JBEmbyAPI ALL
     DEPENDS ${OUTPUT_DIR}/${GO_LIB_FILE}
