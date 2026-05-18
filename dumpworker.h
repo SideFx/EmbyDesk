@@ -3,7 +3,7 @@
 // Purpose:    Perform dump of Emby collections
 // Author:     Jan Buchholz
 // Created:    2026-05-09
-// Changed:    2026-05-12
+// Changed:    2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -35,6 +35,7 @@ private:
     bool createHomeVideoTable();
     bool createMusicVideoTable();
     bool createMusicTables();
+    QString lastDBError(const QSqlQuery& q);
 
     QString m_directory;
     QString m_dbName;

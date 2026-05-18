@@ -3,13 +3,14 @@
 // Purpose:     Item model for Emby "musicvideos"
 // Author:      Jan Buchholz
 // Created:     2026-05-01
-// Changed:     2026-05-09
+// Changed:     2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #include <QAbstractItemModel>
 #include "jbparser.hpp"
+#include "statistics.h"
 
 class MusicVideoTreeModel : public QAbstractItemModel {
     Q_OBJECT
@@ -58,9 +59,11 @@ public:
     const MusicVideoDataInc* musicVideoData(const Node* node) const;
     const std::vector<MusicVideoTreeModel::MusicVideoNode*>* rootNodes() const;
     void clearModel();
+    const QString getStatistics();
 
 private:
     std::vector<MusicVideoNode*> m_videos;
+    Statistics m_stat;
 
     void clear();
 };

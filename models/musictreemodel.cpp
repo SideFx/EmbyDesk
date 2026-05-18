@@ -3,7 +3,7 @@
 // Purpose:     Item model for Emby "music"
 // Author:      Jan Buchholz
 // Created:     2026-05-01
-// Changed:     2026-05-17
+// Changed:     2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #include "musictreemodel.h"
@@ -26,6 +26,7 @@ void MusicTreeModel::setData(const MusicData& data) {
             audioNode->data = audio;
             audioNode->parent = albumNode;
             albumNode->tracks.push_back(audioNode);
+            m_stat.l2++;
         }
         // ---Sort tracks by discNumber & trackNumber---
         std::stable_sort(albumNode->tracks.begin(), albumNode->tracks.end(),
@@ -37,6 +38,7 @@ void MusicTreeModel::setData(const MusicData& data) {
                              return a->data.discNumber < b->data.discNumber;
                          });
         m_albums.push_back(albumNode);
+        m_stat.l1++;
     }
     // ---Sort albums by album artist & name---
     std::stable_sort(m_albums.begin(), m_albums.end(),
@@ -205,10 +207,16 @@ void MusicTreeModel::clear() {
         delete album;
     }
     m_albums.clear();
+    m_stat = {};
 }
 
 void MusicTreeModel::clearModel() {
     beginResetModel();
     clear();
     endResetModel();
+}
+
+const QString MusicTreeModel::getStatistics() {
+    return "A: " + QString::number(m_stat.l1) + " " +
+           "T: " + QString::number(m_stat.l2);
 }

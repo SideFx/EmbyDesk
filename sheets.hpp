@@ -18,6 +18,7 @@
 #include "jbparser.hpp"
 #include "conversions.hpp"
 #include "jbimagecache.h"
+#include "globals.h"
 #include "models/headertexts.h"
 
 constexpr int c_maxVisibleActors = 5;
@@ -94,15 +95,18 @@ inline QPixmap makeDummyPixmap(int w, int h, const QColor& bg, const QString& te
 class DummyImages {
 public:
     static const QPixmap& poster() {
-        static QPixmap pm = makeDummyPixmap(120, 180, QColor("#C0C0C0"), dummyText);
+        int w = DEF_IMAGE_HEIGHT * 10 / 14;
+        static QPixmap pm = makeDummyPixmap(w, DEF_IMAGE_HEIGHT, QColor("#C0C0C0"), dummyText);
         return pm;
     }
     static const QPixmap& frame() {
-        static QPixmap pm = makeDummyPixmap(180, 101, QColor("#C0C0C0"), dummyText);
+        int h = DEF_IMAGE_WIDTH * 9 / 16;
+        static QPixmap pm = makeDummyPixmap(DEF_IMAGE_WIDTH, h, QColor("#C0C0C0"), dummyText);
         return pm;
     }
     static const QPixmap& square() {
-        static QPixmap pm = makeDummyPixmap(180, 180, QColor("#C0C0C0"), dummyText);
+        static QPixmap pm = makeDummyPixmap(DEF_IMAGE_WIDTH, DEF_IMAGE_HEIGHT,
+                                            QColor("#C0C0C0"), dummyText);
         return pm;
     }
 };

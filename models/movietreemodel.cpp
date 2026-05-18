@@ -3,7 +3,7 @@
 // Purpose:     Item model for Emby "movies"
 // Author:      Jan Buchholz
 // Created:     2026-05-01
-// Changed:     2026-05-16
+// Changed:     2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #include "movietreemodel.h"
@@ -25,6 +25,7 @@ void MovieTreeModel::setData(const MovieData& data) {
             }
         }
         m_movies.push_back(movieNode);
+        m_stat.l1++;
     }
     endResetModel();
 }
@@ -139,6 +140,7 @@ const std::vector<MovieTreeModel::MovieNode*>* MovieTreeModel::rootNodes() const
 
 void MovieTreeModel::clear() {
     m_movies.clear();
+    m_stat = {};
 }
 
 void MovieTreeModel::clearModel() {
@@ -147,3 +149,6 @@ void MovieTreeModel::clearModel() {
     endResetModel();
 }
 
+const QString MovieTreeModel::getStatistics() {
+    return "M: " + QString::number(m_stat.l1);
+}

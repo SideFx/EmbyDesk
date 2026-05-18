@@ -3,13 +3,14 @@
 // Purpose:     Item model for Emby "music"
 // Author:      Jan Buchholz
 // Created:     2026-05-01
-// Changed:     2026-05-09
+// Changed:     2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #include <QAbstractItemModel>
 #include "jbparser.hpp"
+#include "statistics.h"
 
 class MusicTreeModel : public QAbstractItemModel {
     Q_OBJECT
@@ -61,9 +62,11 @@ public:
     const QStringList trackNamesForAlbum(const Node* node) const;
     const std::vector<AlbumNode *> *rootNodes() const;
     void clearModel();
+    const QString getStatistics();
 
 private:
     std::vector<AlbumNode*> m_albums;
+    Statistics m_stat;
 
     void clear();
 };

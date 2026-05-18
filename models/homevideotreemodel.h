@@ -10,6 +10,7 @@
 
 #include <QAbstractItemModel>
 #include "jbparser.hpp"
+#include "statistics.h"
 
 class HomeVideoTreeModel : public QAbstractItemModel {
     Q_OBJECT
@@ -58,9 +59,11 @@ public:
     const HomeVideoDataInc* homeVideoData(const Node* node) const;
     const std::vector<HomeVideoTreeModel::HomeVideoNode*>* rootNodes() const;
     void clearModel();
+    const QString getStatistics();
 
 private:
     std::vector<HomeVideoNode*> m_videos;
+    Statistics m_stat;
 
     void clear();
 };

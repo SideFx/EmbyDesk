@@ -47,6 +47,7 @@ private:
     QStatusBar* m_statusBar;
     QLabel* m_statusIcon;
     QLabel* m_statusText;
+    QLabel* m_stats;
     QTimer* m_statusTimer;
     QSplitter* m_mainSplitter;
     QComboBox* m_collectionBox;

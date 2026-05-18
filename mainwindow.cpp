@@ -3,7 +3,7 @@
 // Purpose:     The main window
 // Author:      Jan Buchholz
 // Created:     2026-04-23
-// Changed:     2026-05-17
+// Changed:     2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #include "mainwindow.h"
@@ -24,12 +24,14 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+    setWindowTitle(QString(APP_NAME) + " v" + APP_VERSION);
     setMinimumSize(DEF_WINDOW_MINSIZE);
     createToolBar();
     createMainControls();
     createStatusBar();
     setCentralWidget(m_mainSplitter);
     m_offlineMode = false;
+    // --satisfy macOS---
     APICall::sendNetworkBroadcast();
     loadSettings();
     showSplashScreen();
@@ -69,6 +71,12 @@ void MainWindow::createToolBar() {
     m_mainToolBar->addSeparator();
     m_mainToolBar->addAction((ui->actionDump));
     m_mainToolBar->addAction(ui->actionOffline);
+    QWidget* spacerSmall = new QWidget;
+    spacerSmall->setMinimumWidth(10);
+    m_mainToolBar->addWidget(spacerSmall);
+    m_stats = new QLabel;
+    m_stats->setMinimumWidth(180);
+    m_mainToolBar->addWidget(m_stats);
     QWidget* spacerLarge = new QWidget;
     spacerLarge->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_mainToolBar->addWidget(spacerLarge);
@@ -214,10 +222,10 @@ void MainWindow::onActionLogin() {
             }
             enableFunctions();
         } else {
-            showMessage(error, toQString(views.message));
+            showMessage(error, toQString(views.message), DEF_MSG_DURATION);
         }
     } else {
-        showMessage(error, toQString(result.message));
+        showMessage(error, toQString(result.message), DEF_MSG_DURATION);
     }
 }
 
@@ -245,6 +253,7 @@ void MainWindow::onActionRetrieve() {
                     m_tree->header()->setSortIndicator(MovieTreeModel::Name, Qt::AscendingOrder);
                 }
                 cols = m_movieModel.columnCount();
+                m_stats->setText(m_movieModel.getStatistics());
             }
         } else {
             showMessage(error, toQString(m_movies.message));
@@ -266,6 +275,7 @@ void MainWindow::onActionRetrieve() {
                 m_tree->header()->setSortIndicatorShown(false);
                 m_tree->header()->setSectionsClickable(false);
                 cols = m_seriesModel.columnCount();
+                m_stats->setText(m_seriesModel.getStatistics());
             }
         } else {
             showMessage(error, toQString(m_series.message));
@@ -291,6 +301,7 @@ void MainWindow::onActionRetrieve() {
                     m_tree->header()->setSortIndicator(HomeVideoTreeModel::Name, Qt::AscendingOrder);
                 }
                 cols = m_homeVideoModel.columnCount();
+                m_stats->setText(m_homeVideoModel.getStatistics());
             }
         } else {
             showMessage(error, toQString(m_homeVideos.message));
@@ -316,6 +327,7 @@ void MainWindow::onActionRetrieve() {
                     m_tree->header()->setSortIndicator(MusicVideoTreeModel::Name, Qt::AscendingOrder);
                 }
                 cols = m_musicVideoModel.columnCount();
+                m_stats->setText(m_musicVideoModel.getStatistics());
             }
         } else {
             showMessage(error, toQString(m_musicVideos.message));
@@ -337,6 +349,7 @@ void MainWindow::onActionRetrieve() {
                 m_tree->header()->setSortIndicatorShown(false);
                 m_tree->header()->setSectionsClickable(false);
                 cols = m_musicModel.columnCount();
+                m_stats->setText(m_musicModel.getStatistics());
             }
         } else {
             showMessage(error, toQString(m_music.message));
@@ -405,7 +418,7 @@ void MainWindow::onActionExport() {
     if (exp.doExport(model, m_collection, fileName)) {
         showMessage(information, tr("Collection exported to file ") + fileInfo.fileName(), DEF_MSG_DURATION);
     } else {
-        showMessage(error, ERROR_MESSAGES[MSG_XLSX_WRITE_ERROR]);
+        showMessage(error, ERROR_MESSAGES[MSG_XLSX_WRITE_ERROR], DEF_MSG_DURATION);
     }
 }
 
@@ -428,6 +441,14 @@ void MainWindow::onReceivePathInfo(const QString& directory, const QString& name
 }
 
 void MainWindow::onActionOffline(){
+    if (m_offlineMode) {
+        resetModelsAndUI();
+        m_offlineMode = false;
+        showMessage(information,
+                    tr("Offline mode has finished. You may log in to your Emby server again."),
+                    DEF_MSG_DURATION);
+        return;
+    }
     m_offlineMode = false;
     if (ui->actionOffline->isChecked()) {
         QFileDialog openDialog;
@@ -452,7 +473,7 @@ void MainWindow::onActionOffline(){
                 fileName = files.first();
                 ErrorCode ec = m_sqlReader.openAndCheckDB(fileName);
                 if (ec != MSG_OK) {
-                    showMessage(error, ERROR_MESSAGES[ec]);
+                    showMessage(error, ERROR_MESSAGES[ec], DEF_MSG_DURATION);
                     ui->actionOffline->setChecked(false);
                     return;
                 }
@@ -498,6 +519,7 @@ void MainWindow::onCollectionChanged(int index) {
     m_splashDialog.show();
     m_mainSplitter->setVisible(false);
     m_itemCount = 0;
+    m_stats->setText("");
     m_collection = m_collectionBox->itemData(index).value<EmbyCollection>();
     ui->actionExport->setEnabled(false);
 }
@@ -705,7 +727,10 @@ void MainWindow::resetModelsAndUI() {
     m_homeVideos = {};
     m_musicVideos = {};
     m_music = {};
+    m_stats->setText("");
     m_collectionBox->clear();
+    m_collection = {};
+    m_itemCount = 0;
     m_mainSplitter->setVisible(false);
     m_splashDialog.show();
 }

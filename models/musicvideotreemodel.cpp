@@ -3,7 +3,7 @@
 // Purpose:     Item model for Emby "musicvideos"
 // Author:      Jan Buchholz
 // Created:     2026-05-01
-// Changed:     2026-05-16
+// Changed:     2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #include "musicvideotreemodel.h"
@@ -25,6 +25,7 @@ void MusicVideoTreeModel::setData(const MusicVideoData& data) {
             }
         }
         m_videos.push_back(videoNode);
+        m_stat.l1++;
     }
     endResetModel();
 }
@@ -136,10 +137,15 @@ const std::vector<MusicVideoTreeModel::MusicVideoNode*>* MusicVideoTreeModel::ro
 
 void MusicVideoTreeModel::clear() {
     m_videos.clear();
+    m_stat = {};
 }
 
 void MusicVideoTreeModel::clearModel() {
     beginResetModel();
     clear();
     endResetModel();
+}
+
+const QString MusicVideoTreeModel::getStatistics() {
+    return "V: " + QString::number(m_stat.l1);
 }

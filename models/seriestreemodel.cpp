@@ -3,7 +3,7 @@
 // Purpose:     Item model for Emby "tvshows"
 // Author:      Jan Buchholz
 // Created:     2026-05-01
-// Changed:     2026-05-16
+// Changed:     2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #include "seriestreemodel.h"
@@ -33,6 +33,7 @@ void SeriesTreeModel::setData(const SeriesData& data) {
                 episodeNode->data = episode;
                 episodeNode->parent = seasonNode;
                 seasonNode->episodes.push_back(episodeNode);
+                m_stat.l3++;
             }
             // ---Sort Episodes by sortIndex---
             std::sort(seasonNode->episodes.begin(), seasonNode->episodes.end(),
@@ -40,6 +41,7 @@ void SeriesTreeModel::setData(const SeriesData& data) {
                           return a->data.sortIndex < b->data.sortIndex;
                       });
             seriesNode->seasons.push_back(seasonNode);
+            m_stat.l2++;
         }
         // ---Sort Seasons by sortIndex---
         std::sort(seriesNode->seasons.begin(), seriesNode->seasons.end(),
@@ -47,6 +49,7 @@ void SeriesTreeModel::setData(const SeriesData& data) {
                       return a->data.sortIndex < b->data.sortIndex;
                   });
         m_series.push_back(seriesNode);
+        m_stat.l1++;
     }
     // ---Sort Series by name---
     std::sort(m_series.begin(), m_series.end(),
@@ -246,10 +249,17 @@ void SeriesTreeModel::clear() {
         delete series;
     }
     m_series.clear();
+    m_stat = {};
 }
 
 void SeriesTreeModel::clearModel() {
     beginResetModel();
     clear();
     endResetModel();
+}
+
+const QString SeriesTreeModel::getStatistics() {
+    return "S: " + QString::number(m_stat.l1) + " " +
+           "S: " + QString::number(m_stat.l2) + " " +
+           "E: " + QString::number(m_stat.l3);
 }

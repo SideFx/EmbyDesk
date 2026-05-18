@@ -3,13 +3,14 @@
 // Purpose:     Item model for Emby "movies"
 // Author:      Jan Buchholz
 // Created:     2026-05-01
-// Changed:     2026-05-09
+// Changed:     2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #include <QAbstractItemModel>
 #include "jbparser.hpp"
+#include "statistics.h"
 
 class MovieTreeModel : public QAbstractItemModel {
     Q_OBJECT
@@ -59,9 +60,11 @@ public:
     const MovieDataInc* movieData(const Node* node) const;
     const std::vector<MovieTreeModel::MovieNode*>* rootNodes() const;
     void clearModel();
+    const QString getStatistics();
 
 private:
     std::vector<MovieNode*> m_movies;
+    Statistics m_stat;
 
     void clear();
 };

@@ -1,0 +1,16 @@
+/////////////////////////////////////////////////////////////////////////////
+// Name:        statistics.h
+// Purpose:     Struct def. for item count
+// Author:      Jan Buchholz
+// Created:     2026-05-18
+// Changed:     2026-05-18
+/////////////////////////////////////////////////////////////////////////////
+
+#pragma once
+
+struct Statistics {
+    int l1;
+    int l2;
+    int l3;
+};
+

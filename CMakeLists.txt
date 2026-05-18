@@ -39,6 +39,7 @@ qt_add_executable(EmbyDesk
     dumpworker.h dumpworker.cpp
     sqlreader.h sqlreader.cpp
     sqlreturntypes.h
+    models/statistics.h
 )
 
 # Show below files in the QtCreator project tree
@@ -66,13 +67,12 @@ target_link_libraries(EmbyDesk
 )
 
 if(APPLE)
-    set(ENV{PATH} "/usr/local/go/bin:$ENV{PATH}")
+    set(MACOSX_BUNDLE_ICON_FILE app.icns)
+    set(APP_ICON "${CMAKE_SOURCE_DIR}/app.icns")
+    set_source_files_properties(${APP_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 endif()
 
-
 add_dependencies(EmbyDesk JBEmbyAPI)
-
-message("PATH during CMake: $ENV{PATH}")
 
 add_custom_command(TARGET EmbyDesk POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different

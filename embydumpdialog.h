@@ -3,7 +3,7 @@
 // Purpose:    Popup to prepare and view progress of dump of Emby collections
 // Author:     Jan Buchholz
 // Created:    2026-05-09
-// Changed:    2026-05-09
+// Changed:    2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -38,6 +38,9 @@ private:
     QPushButton* m_btnCancel;
     QString m_directory;
     QString m_dbName;
+
+    QString c_msg = QObject::tr("Note: The dump may take some time depending on the size of your library "
+                                "and especially the number of images (covers, captured frames, etc.).");
 
 private slots:
     void onSelect();

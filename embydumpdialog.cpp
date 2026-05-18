@@ -3,7 +3,7 @@
 // Purpose:    Popup to prepare and view progress of dump of Emby collections
 // Author:     Jan Buchholz
 // Created:    2026-05-09
-// Changed:    2026-05-12
+// Changed:    2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #include "embydumpdialog.h"
@@ -24,16 +24,22 @@ EmbyDumpDialog::EmbyDumpDialog(QWidget *parent) : QDialog(parent)
     setFixedSize(this->geometry().width(), this->geometry().height());
     setWindowTitle(tr("Dump Emby Collections"));
     m_btnDump = new QPushButton(this);
+    m_btnDump->setVisible(true);
     m_btnDump->setEnabled(false);
     m_btnDump->setText(tr("Start Dump"));
     m_btnCancel = new QPushButton(this);
     m_btnCancel->setText(tr("Cancel"));
     ui->buttonBox->addButton(m_btnCancel, QDialogButtonBox::RejectRole);
     ui->buttonBox->addButton(m_btnDump, QDialogButtonBox::ActionRole);
+#if defined(Q_OS_MAC)
+    ui->buttonBox->setLayoutDirection(Qt::RightToLeft);
+    ui->buttonBox->setCenterButtons(false);
+#endif
     ui->edt_path->setReadOnly(true);
     ui->edt_logger->setReadOnly(true);
     QFont mono = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     ui->edt_logger->setFont(mono);
+    ui->edt_logger->setPlainText(c_msg + "\n");
     connect(ui->btn_select, &QPushButton::clicked, this, &EmbyDumpDialog::onSelect);
     connect(m_btnDump, &QPushButton::clicked, this, &EmbyDumpDialog::onDump);
     connect(ui->edt_path, &QLineEdit::textChanged, this, &EmbyDumpDialog::onTextChanged);
@@ -72,7 +78,7 @@ void EmbyDumpDialog::onDump() {
     if (!checkFileDoesNotExist()) return;
     emit sendPathInfo(m_directory, m_dbName);
     // ---start Dump---
-    m_btnDump->setEnabled(false);
+    m_btnDump->setVisible(false);
     m_btnCancel->setEnabled(false);
     ui->edt_path->setEnabled(false);
     ui->edt_filename->setEnabled(false);

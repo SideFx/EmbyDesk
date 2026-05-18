@@ -3,7 +3,7 @@
 // Purpose:     Item model for Emby "homevideos"
 // Author:      Jan Buchholz
 // Created:     2026-05-01
-// Changed:     2026-05-16
+// Changed:     2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #include "homevideotreemodel.h"
@@ -25,6 +25,7 @@ void HomeVideoTreeModel::setData(const HomeVideoData& data) {
             }
         }
         m_videos.push_back(videoNode);
+        m_stat.l1++;
     }
     endResetModel();
 }
@@ -136,10 +137,15 @@ const std::vector<HomeVideoTreeModel::HomeVideoNode*>* HomeVideoTreeModel::rootN
 
 void HomeVideoTreeModel::clear() {
     m_videos.clear();
+    m_stat = {};
 }
 
 void HomeVideoTreeModel::clearModel() {
     beginResetModel();
     clear();
     endResetModel();
+}
+
+const QString HomeVideoTreeModel::getStatistics() {
+    return "V: " + QString::number(m_stat.l1);
 }

@@ -3,7 +3,7 @@
 // Purpose:    Perform dump of Emby collections
 // Author:     Jan Buchholz
 // Created:    2026-05-09
-// Changed:    2026-05-16
+// Changed:    2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #include "dumpworker.h"
@@ -48,7 +48,7 @@ void DumpWorker::run() {
             qc.bindValue(":name", toQString(v.name));
             qc.bindValue(":type", toQString(v.collectionType));
             if (!qc.exec()) {
-                emit log("ERROR inserting into table 'collection': " + qc.lastError().text());
+                emit log(tr("ERROR inserting into table 'collection': ") + lastDBError(qc));
                 b = false;
                 break;
             }
@@ -105,8 +105,7 @@ bool DumpWorker::createDb() {
     m_db = QSqlDatabase::addDatabase("QSQLITE", DEF_SQLITE_CONNECTION);
     m_db.setDatabaseName(fullPath);
     if (!m_db.open()) {
-        emit log(tr("ERROR: Cannot open SQLite database!"));
-        emit log(m_db.lastError().text());
+        emit log(tr("ERROR: Cannot open SQLite database! ") + m_db.lastError().text());
         return false;
     }
     QSqlQuery q(m_db);
@@ -118,8 +117,7 @@ bool DumpWorker::createDb() {
             "type TEXT"
             ")"
             )) {
-        emit log(tr("ERROR: Cannot create table 'collection'"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create table 'collection' ") + lastDBError(q));
         return false;
     }
     emit log(tr("Created table 'collection'"));
@@ -130,8 +128,7 @@ bool DumpWorker::createDb() {
             "value TEXT"
             ")"
             )) {
-        emit log(tr("ERROR: Cannot create table 'meta'"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create table 'meta' ") + lastDBError(q));
         return false;
     }
     emit log(tr("Created table 'meta'"));
@@ -144,8 +141,7 @@ bool DumpWorker::createDb() {
             "PRIMARY KEY (collection_id, parent_id, genre)"
             ")"
             )) {
-        emit log(tr("ERROR: Cannot create table 'genre'"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create table 'genre' ") + lastDBError(q));
         return false;
     }
     emit log(tr("Created table 'genre'"));
@@ -153,8 +149,7 @@ bool DumpWorker::createDb() {
     if (!q.exec(
             "CREATE INDEX idx_genre_parent ON genre(parent_id)"
             )) {
-        emit log(tr("ERROR: Cannot create index 'idx_genre_parent'"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create index 'idx_genre_parent' ") + lastDBError(q));
         return false;
     }
     emit log(tr("Created index 'idx_genre_parent'"));
@@ -167,8 +162,7 @@ bool DumpWorker::createDb() {
             "PRIMARY KEY (collection_id, parent_id, studio)"
             ")"
             )) {
-        emit log(tr("ERROR: Cannot create table 'studio'"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create table 'studio' ") + lastDBError(q));
         return false;
     }
     emit log(tr("Created table 'studio'"));
@@ -176,8 +170,7 @@ bool DumpWorker::createDb() {
     if (!q.exec(
             "CREATE INDEX idx_studio_parent ON studio(parent_id)"
             )) {
-        emit log(tr("ERROR: Cannot create index 'idx_studio_parent'"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create index 'idx_studio_parent' ") + lastDBError(q));
         return false;
     }
     emit log(tr("Created index 'idx_studio_parent'"));
@@ -192,8 +185,7 @@ bool DumpWorker::createDb() {
             "PRIMARY KEY (collection_id, parent_id, name, role)"
             ")"
             )) {
-        emit log(tr("ERROR: Cannot create table 'people'"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create table 'people' ") + lastDBError(q));
         return false;
     }
     emit log(tr("Created table 'people'"));
@@ -201,8 +193,7 @@ bool DumpWorker::createDb() {
     if (!q.exec(
             "CREATE INDEX idx_people_parent ON people(parent_id)"
             )) {
-        emit log(tr("ERROR: Cannot create index 'idx_people_parent'"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create index 'idx_people_parent' ") + lastDBError(q));
         return false;
     }
     emit log(tr("Created index 'idx_people_parent'"));
@@ -215,8 +206,7 @@ bool DumpWorker::createDb() {
             "PRIMARY KEY (collection_id, folder_id)"
             ")"
             )) {
-        emit log(tr("ERROR: Cannot create table 'folder'"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create table 'folder' ") + lastDBError(q));
         return false;
     }
     emit log(tr("Created table 'folder'"));
@@ -224,8 +214,7 @@ bool DumpWorker::createDb() {
     if (!q.exec(
             "CREATE INDEX idx_folder_id ON folder(folder_id)"
             )) {
-        emit log(tr("ERROR: Cannot create index 'idx_folder_id'"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create index 'idx_folder_id' ") + lastDBError(q));
         return false;
     }
     emit log(tr("Created index 'idx_folder_id'"));
@@ -236,8 +225,7 @@ bool DumpWorker::createDb() {
             "image BLOB"
             ")"
             )) {
-        emit log(tr("ERROR: Cannot create table 'image'"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create table 'image' ") + lastDBError(q));
         return false;
     }
     emit log(tr("Created table 'image'"));
@@ -245,8 +233,7 @@ bool DumpWorker::createDb() {
     if (!q.exec(
             "CREATE INDEX idx_image_parent ON image(parent_id)"
             )) {
-        emit log(tr("ERROR: Cannot create index 'idx_image_parent'"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create index 'idx_image_parent' ") + lastDBError(q));
         return false;
     }
     emit log(tr("Created index 'idx_image_parent'"));
@@ -295,8 +282,7 @@ bool DumpWorker::processCollection(UserView& view) {
             ":file_size, :file_name, :imdb_id, :added_at, :folder_id"
             ")";
         if (!q.prepare(sql)) {
-            emit log("ERROR: Failed to prepare INSERT for table 'movie'");
-            emit log(q.lastError().text());
+            emit log(tr("ERROR: Failed to prepare INSERT for table 'movie' ") + lastDBError(q));
             return false;
         }
         for (auto& m : m_movies.movies.tMovieData) {
@@ -319,7 +305,7 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":added_at", m.addedAt);
             q.bindValue(":folder_id", toQString(m.folderId));
             if (!q.exec()) {
-                emit log("ERROR inserting into table 'movie': " + q.lastError().text());
+                emit log(tr("ERROR inserting into table 'movie' ") + lastDBError(q));
                 return false;
             }
             QSqlQuery qp(m_db);
@@ -332,7 +318,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qp.bindValue(":role", toQString(ActorPersonType));
                 qp.bindValue(":sort_order", ++sort_order);
                 if (!qp.exec()) {
-                    emit log("ERROR inserting into table 'person': " + qp.lastError().text());
+                    emit log(tr("ERROR inserting into table 'person' ") + lastDBError(qp));
                 }
             }
             sort_order = 0;
@@ -343,7 +329,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qp.bindValue(":role", toQString(DirectorPersonType));
                 qp.bindValue(":sort_order", ++sort_order);
                 if (!qp.exec()) {
-                    emit log("ERROR inserting into table 'person': " + qp.lastError().text());
+                    emit log(tr("ERROR inserting into table 'person' ") + lastDBError(qp));
                 }
             }
             QSqlQuery qs(m_db);
@@ -353,7 +339,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qs.bindValue(":parent_id", toQString(m.movieId));
                 qs.bindValue(":studio", toQString(s));
                 if (!qs.exec()) {
-                    emit log("ERROR inserting into table 'studio': " + qs.lastError().text());
+                    emit log(tr("ERROR inserting into table 'studio' ") + lastDBError(qs));
                 }
             }
             QSqlQuery qg(m_db);
@@ -363,7 +349,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qg.bindValue(":parent_id", toQString(m.movieId));
                 qg.bindValue(":genre", toQString(g));
                 if (!qg.exec()) {
-                    emit log("ERROR inserting into table 'genre': " + qg.lastError().text());
+                    emit log(tr("ERROR inserting into table 'genre' ") + lastDBError(qg));
                 }
             }
         }
@@ -374,8 +360,7 @@ bool DumpWorker::processCollection(UserView& view) {
             qf.bindValue(":folder_id", toQString(f.folderId));
             qf.bindValue(":name", toQString(f.name));
             if (!qf.exec()) {
-                emit log("ERROR inserting into table 'folder'");
-                emit log(qf.lastError().text());
+                emit log(tr("ERROR inserting into table 'folder' ") + lastDBError(qf));
                 return false;
             }
         }
@@ -393,7 +378,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qi.bindValue(":parent_id", toQString(m.movieId));
                 qi.bindValue(":image", imgData);
                 if (!qi.exec()) {
-                    emit log("ERROR inserting into table 'image': " + qi.lastError().text());
+                    emit log(tr("ERROR inserting into table 'image' ") + lastDBError(qi));
                 }
             } else {
                 emit log(toQString(img.message));
@@ -413,8 +398,7 @@ bool DumpWorker::processCollection(UserView& view) {
             "VALUES (:collection_id, :id, :name, :original_title, :production_year, "
             ":overview, :added_at, :imdb_id)";
         if (!q.prepare(sql)) {
-            emit log("ERROR: Failed to prepare INSERT for table 'series'");
-            emit log(q.lastError().text());
+            emit log(tr("ERROR: Failed to prepare INSERT for table 'series' ") + lastDBError(q));
             return false;
         }
         for (auto& s : m_series.series.tSeriesData) {
@@ -427,7 +411,7 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":added_at", s.addedAt);
             q.bindValue(":imdb_id", toQString(s.imDbId));
             if (!q.exec()) {
-                emit log("ERROR inserting into table 'series': " + q.lastError().text());
+                emit log(tr("ERROR inserting into table 'series' ") + lastDBError(q));
                 return false;
             }
             QSqlQuery qp(m_db);
@@ -440,7 +424,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qp.bindValue(":role", toQString(ActorPersonType));
                 qp.bindValue(":sort_order", ++sort_order);
                 if (!qp.exec()) {
-                    emit log("ERROR inserting into table 'person': " + qp.lastError().text());
+                    emit log(tr("ERROR inserting into table 'person' ") + lastDBError(qp));
                 }
             }
             sort_order = 0;
@@ -451,7 +435,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qp.bindValue(":role", toQString(DirectorPersonType));
                 qp.bindValue(":sort_order", ++sort_order);
                 if (!qp.exec()) {
-                    emit log("ERROR inserting into table 'person': " + qp.lastError().text());
+                    emit log(tr("ERROR inserting into table 'person' ") + lastDBError(qp));
                 }
             }
             QSqlQuery qs(m_db);
@@ -461,7 +445,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qs.bindValue(":parent_id", toQString(s.seriesId));
                 qs.bindValue(":studio", toQString(st));
                 if (!qs.exec()) {
-                    emit log("ERROR inserting into table 'studio': " + qs.lastError().text());
+                    emit log(tr("ERROR inserting into table 'studio' ") + lastDBError(qs));
                 }
             }
             QSqlQuery qg(m_db);
@@ -471,7 +455,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qg.bindValue(":parent_id", toQString(s.seriesId));
                 qg.bindValue(":genre", toQString(g));
                 if (!qg.exec()) {
-                    emit log("ERROR inserting into table 'genre': " + qg.lastError().text());
+                    emit log(tr("ERROR inserting into table 'genre' ") + lastDBError(qg));
                 }
             }
         }
@@ -489,7 +473,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qi.bindValue(":parent_id", toQString(s.seriesId));
                 qi.bindValue(":image", imgData);
                 if (!qi.exec()) {
-                    emit log("ERROR inserting into table 'image': " + qi.lastError().text());
+                    emit log(tr("ERROR inserting into table 'image' ") + lastDBError(qi));
                 }
             } else {
                 emit log(toQString(img.message));
@@ -501,8 +485,7 @@ bool DumpWorker::processCollection(UserView& view) {
             "VALUES (:collection_id, :series_id, :id, :name, :production_year, :runtime, :added_at, "
             ":sort_index)";
         if (!q.prepare(sql)) {
-            emit log("ERROR: Failed to prepare INSERT for table 'season'");
-            emit log(q.lastError().text());
+            emit log(tr("ERROR: Failed to prepare INSERT for table 'season' ") + lastDBError(q));
             return false;
         }
         for (auto& s : m_series.series.tSeasonData) {
@@ -515,7 +498,7 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":added_at", s.addedAt);
             q.bindValue(":sort_index", s.sortIndex);
             if (!q.exec()) {
-                emit log("ERROR inserting into table 'season': " + q.lastError().text());
+                emit log(tr("ERROR inserting into table 'season' ") + lastDBError(q));
                 return false;
             }
         }
@@ -533,7 +516,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qi.bindValue(":parent_id", toQString(s.seasonId));
                 qi.bindValue(":image", imgData);
                 if (!qi.exec()) {
-                    emit log("ERROR inserting into table 'image': " + qi.lastError().text());
+                    emit log(tr("ERROR inserting into table 'image' ") + lastDBError(qi));
                 }
             } else {
                 emit log(toQString(img.message));
@@ -550,8 +533,7 @@ bool DumpWorker::processCollection(UserView& view) {
             ":file_size, :file_name, :added_at, :imdb_id, :sort_index"
             ")";
         if (!q.prepare(sql)) {
-            emit log("ERROR: Failed to prepare INSERT for table 'episode'");
-            emit log(q.lastError().text());
+            emit log(tr("ERROR: Failed to prepare INSERT for table 'episode' ") + lastDBError(q));
             return false;
         }
         for (auto& e : m_series.series.tEpisodeData) {
@@ -576,7 +558,7 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":imdb_id", toQString(e.imDbId));
             q.bindValue(":sort_index", e.sortIndex);
             if (!q.exec()) {
-                emit log("ERROR inserting into table 'episode': " + q.lastError().text());
+                emit log(tr("ERROR inserting into table 'episode': ") + lastDBError(q));
                 return false;
             }
             QSqlQuery qp(m_db);
@@ -589,7 +571,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qp.bindValue(":role", toQString(ActorPersonType));
                 qp.bindValue(":sort_order", ++sort_order);
                 if (!qp.exec()) {
-                    emit log("ERROR inserting into table 'person': " + qp.lastError().text());
+                    emit log(tr("ERROR inserting into table 'person' ") + lastDBError(qp));
                 }
             }
             sort_order = 0;
@@ -600,7 +582,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qp.bindValue(":role", toQString(DirectorPersonType));
                 qp.bindValue(":sort_order", ++sort_order);
                 if (!qp.exec()) {
-                    emit log("ERROR inserting into table 'person': " + qp.lastError().text());
+                    emit log(tr("ERROR inserting into table 'person' ") + lastDBError(qp));
                 }
             }
         }
@@ -618,7 +600,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qi.bindValue(":parent_id", toQString(e.episodeId));
                 qi.bindValue(":image", imgData);
                 if (!qi.exec()) {
-                    emit log("ERROR inserting into table 'image': " + qi.lastError().text());
+                    emit log(tr("ERROR inserting into table 'image' ") + lastDBError(qi));
                 }
             } else {
                 emit log(toQString(img.message));
@@ -643,8 +625,7 @@ bool DumpWorker::processCollection(UserView& view) {
             ":file_size, :file_name, :added_at, :folder_id"
             ")";
         if (!q.prepare(sql)) {
-            emit log("ERROR: Failed to prepare INSERT for table 'homevideo'");
-            emit log(q.lastError().text());
+            emit log(tr("ERROR: Failed to prepare INSERT for table 'homevideo' ") + lastDBError(q));
             return false;
         }
         for (auto& v : m_homeVideos.homeVideos.tHomeVideoData) {
@@ -665,7 +646,7 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":added_at", v.addedAt);
             q.bindValue(":folder_id", toQString(v.folderId));
             if (!q.exec()) {
-                emit log("ERROR inserting into table 'homevideo': " + q.lastError().text());
+                emit log(tr("ERROR inserting into table 'homevideo' ") + lastDBError(q));
                 return false;
             }
             QSqlQuery qg(m_db);
@@ -675,7 +656,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qg.bindValue(":parent_id", toQString(v.videoId));
                 qg.bindValue(":genre", toQString(g));
                 if (!qg.exec()) {
-                    emit log("ERROR inserting into table 'genre': " + qg.lastError().text());
+                    emit log(tr("ERROR inserting into table 'genre' ") + lastDBError(qg));
                 }
             }
         }
@@ -686,8 +667,7 @@ bool DumpWorker::processCollection(UserView& view) {
             qf.bindValue(":folder_id", toQString(f.folderId));
             qf.bindValue(":name", toQString(f.name));
             if (!qf.exec()) {
-                emit log("ERROR inserting into table 'folder'");
-                emit log(qf.lastError().text());
+                emit log(tr("ERROR inserting into table 'folder' ") + lastDBError(qf));
                 return false;
             }
         }
@@ -705,7 +685,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qi.bindValue(":parent_id", toQString(v.videoId));
                 qi.bindValue(":image", imgData);
                 if (!qi.exec()) {
-                    emit log("ERROR inserting into table 'image': " + qi.lastError().text());
+                    emit log(tr("ERROR inserting into table 'image' ") + lastDBError(qi));
                 }
             } else {
                 emit log(toQString(img.message));
@@ -730,8 +710,7 @@ bool DumpWorker::processCollection(UserView& view) {
             ":file_size, :file_name, :added_at, :folder_id"
             ")";
         if (!q.prepare(sql)) {
-            emit log("ERROR: Failed to prepare INSERT for table 'musicvideo'");
-            emit log(q.lastError().text());
+            emit log(tr("ERROR: Failed to prepare INSERT for table 'musicvideo' ") + lastDBError(q));
             return false;
         }
         for (auto& v : m_musicVideos.musicVideos.tMusicVideoData) {
@@ -752,7 +731,7 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":added_at", v.addedAt);
             q.bindValue(":folder_id", toQString(v.folderId));
             if (!q.exec()) {
-                emit log("ERROR inserting into table 'musicvideo': " + q.lastError().text());
+                emit log(tr("ERROR inserting into table 'musicvideo' ") + lastDBError(q));
                 return false;
             }
             QSqlQuery qp(m_db);
@@ -765,7 +744,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qp.bindValue(":role", toQString(ArtistPersonType));
                 qp.bindValue(":sort_order", ++sort_order);
                 if (!qp.exec()) {
-                    emit log("ERROR inserting into table 'person': " + qp.lastError().text());
+                    emit log(tr("ERROR inserting into table 'person' ") + lastDBError(qp));
                 }
             }
             QSqlQuery qg(m_db);
@@ -775,7 +754,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qg.bindValue(":parent_id", toQString(v.videoId));
                 qg.bindValue(":genre", toQString(g));
                 if (!qg.exec()) {
-                    emit log("ERROR inserting into table 'genre': " + qg.lastError().text());
+                    emit log(tr("ERROR inserting into table 'genre' ") + lastDBError(qg));
                 }
             }
         }
@@ -786,8 +765,7 @@ bool DumpWorker::processCollection(UserView& view) {
             qf.bindValue(":folder_id", toQString(f.folderId));
             qf.bindValue(":name", toQString(f.name));
             if (!qf.exec()) {
-                emit log("ERROR inserting into table 'folder'");
-                emit log(qf.lastError().text());
+                emit log(tr("ERROR inserting into table 'folder' ") + lastDBError(qf));
                 return false;
             }
         }
@@ -805,7 +783,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qi.bindValue(":parent_id", toQString(v.videoId));
                 qi.bindValue(":image", imgData);
                 if (!qi.exec()) {
-                    emit log("ERROR inserting into table 'image': " + qi.lastError().text());
+                    emit log(tr("ERROR inserting into table 'image' ") + lastDBError(qi));
                 }
             } else {
                 emit log(toQString(img.message));
@@ -828,8 +806,7 @@ bool DumpWorker::processCollection(UserView& view) {
             ":added_at, :musicbrainz_id"
             ")";
         if (!q.prepare(sql)) {
-            emit log("ERROR: Failed to prepare INSERT for table 'album'");
-            emit log(q.lastError().text());
+            emit log(tr("ERROR: Failed to prepare INSERT for table 'album' ") + lastDBError(q));
             return false;
         }
         for (auto& a : m_music.music.tAlbumData) {
@@ -843,7 +820,7 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":added_at", a.addedAt);
             q.bindValue(":musicbrainz_id", toQString(a.musicBrainzId));
             if (!q.exec()) {
-                emit log("ERROR inserting into table 'album': " + q.lastError().text());
+                emit log(tr("ERROR inserting into table 'album' ") + lastDBError(q));
                 return false;
             }
             QSqlQuery qp(m_db);
@@ -856,7 +833,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qp.bindValue(":role", toQString(ArtistPersonType));
                 qp.bindValue(":sort_order", ++sort_order);
                 if (!qp.exec()) {
-                    emit log("ERROR inserting into table 'person': " + qp.lastError().text());
+                    emit log(tr("ERROR inserting into table 'person' ") + lastDBError(qp));
                 }
             }
             QSqlQuery qg(m_db);
@@ -866,7 +843,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qg.bindValue(":parent_id", toQString(a.albumId));
                 qg.bindValue(":genre", toQString(g));
                 if (!qg.exec()) {
-                    emit log("ERROR inserting into table 'genre': " + qg.lastError().text());
+                    emit log(tr("ERROR inserting into table 'genre' ") + lastDBError(qg));
                 }
             }
         }
@@ -884,7 +861,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qi.bindValue(":parent_id", toQString(a.albumId));
                 qi.bindValue(":image", imgData);
                 if (!qi.exec()) {
-                    emit log("ERROR inserting into table 'image': " + qi.lastError().text());
+                    emit log(tr("ERROR inserting into table 'image' ") + lastDBError(qi));
                 }
             } else {
                 emit log(toQString(img.message));
@@ -901,8 +878,7 @@ bool DumpWorker::processCollection(UserView& view) {
               ":file_size, :file_name, :added_at, :media_type"
             ")";
         if (!q.prepare(sql)) {
-            emit log("ERROR: Failed to prepare INSERT for table 'audio'");
-            emit log(q.lastError().text());
+            emit log(tr("ERROR: Failed to prepare INSERT for table 'audio' ") + lastDBError(q));
             return false;
         }
         for (auto& a : m_music.music.tAudioData) {
@@ -924,7 +900,7 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":added_at", a.addedAt);
             q.bindValue(":media_type", toQString(a.mediaType));
             if (!q.exec()) {
-                emit log("ERROR inserting into table 'audio': " + q.lastError().text());
+                emit log(tr("ERROR inserting into table 'audio' ") + lastDBError(q));
                 return false;
             }
             QSqlQuery qp(m_db);
@@ -937,7 +913,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qp.bindValue(":role", toQString(ArtistPersonType));
                 qp.bindValue(":sort_order", ++sort_order);
                 if (!qp.exec()) {
-                    emit log("ERROR inserting into table 'person': " + qp.lastError().text());
+                    emit log(tr("ERROR inserting into table 'person' ") + lastDBError(qp));
                 }
             }
             QSqlQuery qg(m_db);
@@ -947,7 +923,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qg.bindValue(":parent_id", toQString(a.audioId));
                 qg.bindValue(":genre", toQString(g));
                 if (!qg.exec()) {
-                    emit log("ERROR inserting into table 'genre': " + qg.lastError().text());
+                    emit log(tr("ERROR inserting into table 'genre' ") + lastDBError(qg));
                 }
             }
         }
@@ -965,7 +941,7 @@ bool DumpWorker::processCollection(UserView& view) {
                 qi.bindValue(":parent_id", toQString(a.audioId));
                 qi.bindValue(":image", imgData);
                 if (!qi.exec()) {
-                    emit log("ERROR inserting into table 'image': " + qi.lastError().text());
+                    emit log(tr("ERROR inserting into table 'image' ") + lastDBError(qi));
                 }
             } else {
                 emit log(toQString(img.message));
@@ -1001,8 +977,7 @@ bool DumpWorker::createMovieTable() {
         "PRIMARY KEY (collection_id, id)"
         ")";
     if (!q.exec(sql)) {
-        emit log(tr("ERROR: Cannot create movie table"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create 'movie' table ") + lastDBError(q));
         return false;
     }
     emit log(QString(tr("Created table 'movie'")));
@@ -1026,8 +1001,7 @@ bool DumpWorker::createSeriesTables() {
           "PRIMARY KEY (collection_id, id)"
           ")";
     if (!q.exec(sql)) {
-        emit log(tr("ERROR: Cannot create series table"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create 'series' table ") + lastDBError(q));
         return false;
     }
     emit log(QString(tr("Created table 'series'")));
@@ -1045,8 +1019,7 @@ bool DumpWorker::createSeriesTables() {
           "PRIMARY KEY (collection_id, series_id, id)"
           ")";
     if (!q.exec(sql)) {
-        emit log(tr("ERROR: Cannot create season table"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create 'season' table ") + lastDBError(q));
         return false;
     }
     emit log(QString(tr("Created table 'season'")));
@@ -1076,8 +1049,7 @@ bool DumpWorker::createSeriesTables() {
           "PRIMARY KEY (collection_id, series_id, season_id, id)"
           ")";
     if (!q.exec(sql)) {
-        emit log(tr("ERROR: Cannot create episode table"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create 'episode' table ") + lastDBError(q));
         return false;
     }
     emit log(QString(tr("Created table 'episode'")));
@@ -1108,8 +1080,7 @@ bool DumpWorker::createHomeVideoTable() {
                   "PRIMARY KEY (collection_id, id)"
                   ")";
     if (!q.exec(sql)) {
-        emit log(tr("ERROR: Cannot create homevideo table"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create 'homevideo' table ") + lastDBError(q));
         return false;
     }
     emit log(QString(tr("Created table 'homevideo'")));
@@ -1140,8 +1111,7 @@ bool DumpWorker::createMusicVideoTable() {
                   "PRIMARY KEY (collection_id, id)"
                   ")";
     if (!q.exec(sql)) {
-        emit log(tr("ERROR: Cannot create musicvideo table"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create 'musicvideo' table ") + lastDBError(q));
         return false;
     }
     emit log(QString(tr("Created table 'musicvideo'")));
@@ -1165,8 +1135,7 @@ bool DumpWorker::createMusicTables() {
           "PRIMARY KEY (collection_id, id)"
           ")";
     if (!q.exec(sql)) {
-        emit log(tr("ERROR: Cannot create album table"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create 'album' table ") + lastDBError(q));
         return false;
     }
     emit log(QString(tr("Created table 'album'")));
@@ -1193,10 +1162,18 @@ bool DumpWorker::createMusicTables() {
           "PRIMARY KEY (collection_id, album_id, id)"
           ")";
     if (!q.exec(sql)) {
-        emit log(tr("ERROR: Cannot create audio table"));
-        emit log(q.lastError().text());
+        emit log(tr("ERROR: Cannot create 'audio' table ") + lastDBError(q));
         return false;
     }
     emit log(QString(tr("Created table 'audio'")));
     return true;
 }
+
+QString DumpWorker::lastDBError(const QSqlQuery& q) {
+    QString error = q.lastError().text();
+    if (!error.isEmpty()) {
+        return "\n" + tr("DB error: ") + error;
+    }
+    return {};
+}
+

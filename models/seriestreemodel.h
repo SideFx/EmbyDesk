@@ -3,13 +3,14 @@
 // Purpose:     Item model for Emby "tvshows"
 // Author:      Jan Buchholz
 // Created:     2026-05-01
-// Changed:     2026-05-09
+// Changed:     2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #include <QAbstractItemModel>
 #include "jbparser.hpp"
+#include "statistics.h"
 
 class SeriesTreeModel : public QAbstractItemModel {
     Q_OBJECT
@@ -67,9 +68,11 @@ public:
     const QStringList episodeNamesForSeason(const Node* node) const;
     const std::vector<SeriesTreeModel::SeriesNode*>* rootNodes() const;
     void clearModel();
+    const QString getStatistics();
 
 private:
     std::vector<SeriesNode*> m_series;
+    Statistics m_stat;
 
     void clear();
 };
