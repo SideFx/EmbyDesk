@@ -31,10 +31,6 @@ EmbyDumpDialog::EmbyDumpDialog(QWidget *parent) : QDialog(parent)
     m_btnCancel->setText(tr("Cancel"));
     ui->buttonBox->addButton(m_btnCancel, QDialogButtonBox::RejectRole);
     ui->buttonBox->addButton(m_btnDump, QDialogButtonBox::ActionRole);
-#if defined(Q_OS_MAC)
-    ui->buttonBox->setLayoutDirection(Qt::RightToLeft);
-    ui->buttonBox->setCenterButtons(false);
-#endif
     ui->edt_path->setReadOnly(true);
     ui->edt_logger->setReadOnly(true);
     QFont mono = QFontDatabase::systemFont(QFontDatabase::FixedFont);
