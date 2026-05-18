@@ -52,10 +52,6 @@ target_include_directories(EmbyDesk PRIVATE
     ${JBEmbyAPI_INCLUDE_DIRS}
 )
 
-set_target_properties(JBEmbyAPI PROPERTIES
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/EmbyDesk.app/Contents/MacOS"
-)
-
 target_link_libraries(EmbyDesk
     PRIVATE
         Qt::Core
@@ -70,18 +66,31 @@ if(APPLE)
     set(MACOSX_BUNDLE_ICON_FILE app.icns)
     set(APP_ICON "${CMAKE_SOURCE_DIR}/app.icns")
     set_source_files_properties(${APP_ICON} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+    set_target_properties(EmbyDesk PROPERTIES INSTALL_RPATH "@executable_path/../Frameworks")
 endif()
 
 add_dependencies(EmbyDesk JBEmbyAPI)
 
+if(WIN32)
 add_custom_command(TARGET EmbyDesk POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${JBEmbyAPI_LIB}
         $<TARGET_FILE_DIR:EmbyDesk>
 )
+endif()
 
 install(TARGETS EmbyDesk
     BUNDLE  DESTINATION .
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
+
+if(APPLE)
+    add_custom_command(TARGET EmbyDesk POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_FILE_DIR:EmbyDesk>/../Frameworks"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${JBEmbyAPI_LIB}"
+            "$<TARGET_FILE_DIR:EmbyDesk>/../Frameworks/"
+    )
+endif()

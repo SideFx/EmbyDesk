@@ -3,7 +3,7 @@
 // Purpose:     C++ function import (load library)
 // Author:      Jan Buchholz
 // Created:     2026-04-20
-// Last update: 2026-05-14
+// Last update: 2026-05-18
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -22,7 +22,6 @@
     using LibHandle = void*;
     #define LOAD_LIB(name) dlopen(name, RTLD_LAZY)
     #define GET_SYM(lib, name) dlsym(lib, name)
-    #define CLOSE_LIB(lib) dlclose(lib)
     #define LIB_NAME "libjbembyapi.dylib"
 #else
     #include <dlfcn.h>
@@ -47,7 +46,12 @@ public:
     GoLib() = default;
     ~GoLib() = default; //Go shared libraries should not be unloaded
     bool load(const char* name = LIB_NAME) {
+#ifdef __APPLE__
+        std::string fullPath = std::string("@executable_path/../Frameworks/") + name;
+        handle = LOAD_LIB(fullPath.c_str());
+#else
         handle = LOAD_LIB(name);
+#endif
         if (!handle) {
             std::cerr << "Failed to load library: " << name << "\n";
             return false;
