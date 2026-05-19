@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:        globals.h
-// Purpose:     Global constants, struct, etc.
+// Purpose:     Global constants, etc.
 // Author:      Jan Buchholz
 // Created:     2026-04-23
 // Changed:     2026-05-19
