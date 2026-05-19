@@ -3,7 +3,7 @@
 // Purpose:     Global constants, struct, etc.
 // Author:      Jan Buchholz
 // Created:     2026-04-23
-// Changed:     2026-05-16
+// Changed:     2026-05-19
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -88,7 +88,6 @@ enum ErrorCode {
     MSG_DB_NOT_RECOGNIZED,
     MSG_DB_NOT_OPEN,
     MSG_DB_QUERY_ERROR,
-
 };
 
 inline const QStringList ERROR_MESSAGES = {
@@ -98,7 +97,6 @@ inline const QStringList ERROR_MESSAGES = {
     QObject::tr("Cannot read 'meta' table."),
     QObject::tr("Database not recognized as Emby dump."),
     QObject::tr("Database is not open."),
-    QObject::tr("Database SQL error: "),
-
+    QObject::tr("Database SQL error."),
 };
 

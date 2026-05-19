@@ -3,7 +3,7 @@
 // Purpose:    Access local Emby dump DB
 // Author:     Jan Buchholz
 // Created:    2026-05-16
-// Changed:    2026-05-17
+// Changed:    2026-05-19
 /////////////////////////////////////////////////////////////////////////////
 
 #include "sqlreader.h"
@@ -50,7 +50,7 @@ EmbyCollectionResult SqlReader::loadCollections() {
     q.prepare("SELECT id, name, type FROM collection ORDER BY name COLLATE NOCASE");
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = ERROR_MESSAGES[r.code] + q.lastError().text();
+        r.message = ERROR_MESSAGES[r.code] + lastDBError(q);
         return r;
     }
     while (q.next()) {
@@ -77,7 +77,7 @@ VectorStringResult SqlReader::loadGenres(const QSqlDatabase& db,
     q.addBindValue(parentId);
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = toStandardString(ERROR_MESSAGES[r.code] + q.lastError().text());
+        r.message = toStandardString(ERROR_MESSAGES[r.code] + lastDBError(q));
         return r;
     }
     while (q.next()) {
@@ -100,7 +100,7 @@ VectorStringResult SqlReader::loadStudios(const QSqlDatabase& db,
     q.addBindValue(parentId);
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = toStandardString(ERROR_MESSAGES[r.code] + q.lastError().text());
+        r.message = toStandardString(ERROR_MESSAGES[r.code] + lastDBError(q));
         return r;
     }
     while (q.next()) {
@@ -125,7 +125,7 @@ VectorStringResult SqlReader::loadPeople(const QSqlDatabase& db,
     q.addBindValue(personType);
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = toStandardString(ERROR_MESSAGES[r.code] + q.lastError().text());
+        r.message = toStandardString(ERROR_MESSAGES[r.code] + lastDBError(q));
         return r;
     }
     while (q.next()) {
@@ -145,7 +145,7 @@ FolderDataResult SqlReader::loadFolders(const QSqlDatabase& db,
     q.addBindValue(collectionId);
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = toStandardString(ERROR_MESSAGES[r.code] + q.lastError().text());
+        r.message = toStandardString(ERROR_MESSAGES[r.code] + lastDBError(q));
         return r;
     }
     while (q.next()) {
@@ -173,7 +173,7 @@ ByteArrayResult SqlReader::loadImage(const QString& parentId) {
     q.addBindValue(parentId);
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = toStandardString(ERROR_MESSAGES[r.code] + q.lastError().text());
+        r.message = toStandardString(ERROR_MESSAGES[r.code] + lastDBError(q));
         return r;
     }
     if (q.next()) {
@@ -203,7 +203,7 @@ MoviesDataImp SqlReader::loadMovies(const QString& collectionId) {
     q.addBindValue(collectionId);
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = toStandardString(ERROR_MESSAGES[r.code] + q.lastError().text());
+        r.message = toStandardString(ERROR_MESSAGES[r.code] + lastDBError(q));
         return r;
     }
     while (q.next()) {
@@ -293,7 +293,7 @@ SeriesDataImp SqlReader::loadSeries(const QString& collectionId) {
     q.addBindValue(collectionId);
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = toStandardString(ERROR_MESSAGES[r.code] + q.lastError().text());
+        r.message = toStandardString(ERROR_MESSAGES[r.code] + lastDBError(q));
         return r;
     }
     while (q.next()) {
@@ -352,7 +352,7 @@ SeriesDataImp SqlReader::loadSeries(const QString& collectionId) {
     q.addBindValue(collectionId);
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = toStandardString(ERROR_MESSAGES[r.code] + q.lastError().text());
+        r.message = toStandardString(ERROR_MESSAGES[r.code] + lastDBError(q));
         return r;
     }
     while (q.next()) {
@@ -377,7 +377,7 @@ SeriesDataImp SqlReader::loadSeries(const QString& collectionId) {
     q.addBindValue(collectionId);
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = toStandardString(ERROR_MESSAGES[r.code] + q.lastError().text());
+        r.message = toStandardString(ERROR_MESSAGES[r.code] + lastDBError(q));
         return r;
     }
     while (q.next()) {
@@ -447,7 +447,7 @@ HomeVideosDataImp SqlReader::loadHomeVideos(const QString& collectionId) {
     q.addBindValue(collectionId);
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = toStandardString(ERROR_MESSAGES[r.code] + q.lastError().text());
+        r.message = toStandardString(ERROR_MESSAGES[r.code] + lastDBError(q));
         return r;
     }
     while (q.next()) {
@@ -513,7 +513,7 @@ MusicVideosDataImp SqlReader::loadMusicVideos(const QString& collectionId) {
     q.addBindValue(collectionId);
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = toStandardString(ERROR_MESSAGES[r.code] + q.lastError().text());
+        r.message = toStandardString(ERROR_MESSAGES[r.code] + lastDBError(q));
         return r;
     }
     while (q.next()) {
@@ -586,7 +586,7 @@ MusicDataImp SqlReader::loadMusic(const QString& collectionId) {
     q.addBindValue(collectionId);
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = toStandardString(ERROR_MESSAGES[r.code] + q.lastError().text());
+        r.message = toStandardString(ERROR_MESSAGES[r.code] + lastDBError(q));
         return r;
     }
     while (q.next()) {
@@ -631,7 +631,7 @@ MusicDataImp SqlReader::loadMusic(const QString& collectionId) {
     q.addBindValue(collectionId);
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
-        r.message = toStandardString(ERROR_MESSAGES[r.code] + q.lastError().text());
+        r.message = toStandardString(ERROR_MESSAGES[r.code] + lastDBError(q));
         return r;
     }
     while (q.next()) {
@@ -680,3 +680,10 @@ MusicDataImp SqlReader::loadMusic(const QString& collectionId) {
     return r;
 }
 
+QString SqlReader::lastDBError(const QSqlQuery& q) {
+    QString error = q.lastError().text();
+    if (!error.isEmpty()) {
+        return " " + tr("Message: ") + error;
+    }
+    return {};
+}

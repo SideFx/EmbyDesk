@@ -3,7 +3,7 @@
 // Purpose:    Access local Emby dump DB
 // Author:     Jan Buchholz
 // Created:    2026-05-16
-// Changed:    2026-05-16
+// Changed:    2026-05-19
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -43,6 +43,7 @@ private:
                                   const QString& personType);
     FolderDataResult loadFolders(const QSqlDatabase& db,
                                  const QString& collectionId);
+    QString lastDBError(const QSqlQuery& q);
 };
 
 
