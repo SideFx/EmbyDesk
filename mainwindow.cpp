@@ -454,8 +454,8 @@ void MainWindow::onActionOffline(){
         QFileDialog openDialog;
         QString fileName = "";
         QString folder = (m_lastFolderDb.isEmpty())
-                         ? QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
-                         : m_lastFolderXlsx;
+                         ? QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
+                         : m_lastFolderDb;
         openDialog.setParent(this, Qt::Dialog |
                                    Qt::WindowSystemMenuHint |
                                    Qt::WindowCloseButtonHint |
