@@ -389,7 +389,7 @@ SeriesDataImp SqlReader::loadSeries(const QString& collectionId) {
         e.name = q.value(i++).toString().toStdString();
         e.originalTitle = q.value(i++).toString().toStdString();
         e.productionYear = q.value(i++).toInt();
-        e.runtime = q.value(i++).toInt();
+        e.runtime = q.value(i++).toLongLong();
         e.overview = q.value(i++).toString().toStdString();
         e.container = q.value(i++).toString().toStdString();
         e.audioCodec = q.value(i++).toString().toStdString();
