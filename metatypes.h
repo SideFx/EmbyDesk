@@ -2,7 +2,7 @@
 // Name:        metatypes.h
 // Purpose:     Struct for Emby collections
 // Author:      Jan Buchholz
-// Created:     2026-05-16
+// Created:     2026-05-19
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -14,5 +14,6 @@ struct EmbyCollection {
     QString type;
     QString id;
 };
-Q_DECLARE_METATYPE(EmbyCollection);
+Q_DECLARE_METATYPE(EmbyCollection)
+
 
