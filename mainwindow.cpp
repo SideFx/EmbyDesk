@@ -3,7 +3,7 @@
 // Purpose:     The main window
 // Author:      Jan Buchholz
 // Created:     2026-04-23
-// Changed:     2026-05-18
+// Changed:     2026-05-19
 /////////////////////////////////////////////////////////////////////////////
 
 #include "mainwindow.h"
@@ -388,7 +388,7 @@ void MainWindow::onActionExport() {
                                 now.time().toString("hhmmss") +
                                 QString(DEF_EXPORT_SUFFIX);
     QString folder = (m_lastFolderXlsx.isEmpty())
-                     ? QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
+                     ? QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
                      : m_lastFolderXlsx;
     saveDialog.setParent(this, Qt::Dialog |
                                Qt::WindowSystemMenuHint |
