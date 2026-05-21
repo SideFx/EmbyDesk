@@ -2,7 +2,8 @@
 // Name:        Emby.go
 // Purpose:     Emby types based on Emby SDK v4.9.3.0
 // Author:      Jan Buchholz
-// Created:     2025-10-13
+// Created:     2026-04-13
+// Changed:		2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 package API
@@ -306,4 +307,5 @@ const (
 	ActorPersonType     string = "Actor"
 	GuestStarPersonType string = "GuestStar"
 	DirectorPersonType  string = "Director"
+	AnyPersonType       string = "AnyPerson" //does not belong to Emby API
 )

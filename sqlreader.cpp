@@ -3,7 +3,7 @@
 // Purpose:    Access local Emby dump DB
 // Author:     Jan Buchholz
 // Created:    2026-05-16
-// Changed:    2026-05-19
+// Changed:    2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 #include "sqlreader.h"
@@ -13,20 +13,26 @@
 
 SqlReader::SqlReader(QObject* parent) : QObject(parent) {}
 
+SqlReader::~SqlReader() {
+    if (m_db.isOpen()) m_db.close();
+    m_db = QSqlDatabase();
+    closeDBConnection();
+}
+
 ErrorCode SqlReader::openAndCheckDB(QString fileName) {
     m_dbFile = fileName;
     closeDBConnection();
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", DEF_SQLITE_CONNECTION);
-    db.setDatabaseName(m_dbFile);
-    if (!db.open()) return MSG_DB_OPEN_ERROR;
-    QSqlQuery q(db);
+    m_db = QSqlDatabase::addDatabase("QSQLITE", DEF_SQLITE_CONNECTION);
+    m_db.setDatabaseName(m_dbFile);
+    if (!m_db.open()) return MSG_DB_OPEN_ERROR;
+    QSqlQuery q(m_db);
     q.prepare("SELECT value FROM meta WHERE key='app_name'");
     if (!q.exec() || !q.next()) {
-        db.close();
+        m_db.close();
         return MSG_DB_META_ERROR;
     }
     if (q.value(0).toString() != APP_NAME) {
-        db.close();
+        m_db.close();
         return MSG_DB_NOT_RECOGNIZED;
     }
     return MSG_OK;
@@ -38,15 +44,19 @@ void SqlReader::closeDBConnection() {
     }
 }
 
+void SqlReader::shutdownDBConnection() {
+    if (m_db.isOpen()) m_db.close();
+    closeDBConnection();
+}
+
 EmbyCollectionResult SqlReader::loadCollections() {
     EmbyCollectionResult r;
-    QSqlDatabase db = QSqlDatabase::database(DEF_SQLITE_CONNECTION);
-    if (!db.isOpen()) {
+    if (!m_db.isOpen()) {
         r.code = MSG_DB_NOT_OPEN;
         r.message = ERROR_MESSAGES[r.code];
         return r;
     }
-    QSqlQuery q(db);
+    QSqlQuery q(m_db);
     q.prepare("SELECT id, name, type FROM collection ORDER BY name COLLATE NOCASE");
     if (!q.exec()) {
         r.code = MSG_DB_QUERY_ERROR;
@@ -65,11 +75,10 @@ EmbyCollectionResult SqlReader::loadCollections() {
     return r;
 }
 
-VectorStringResult SqlReader::loadGenres(const QSqlDatabase& db,
-                                         const QString& collectionId,
+VectorStringResult SqlReader::loadGenres(const QString& collectionId,
                                          const QString& parentId) {
     VectorStringResult r;
-    QSqlQuery q(db);
+    QSqlQuery q(m_db);
     q.prepare("SELECT genre FROM genre "
               "WHERE collection_id = ? AND parent_id = ? "
               "ORDER BY genre COLLATE NOCASE");
@@ -88,11 +97,10 @@ VectorStringResult SqlReader::loadGenres(const QSqlDatabase& db,
     return r;
 }
 
-VectorStringResult SqlReader::loadStudios(const QSqlDatabase& db,
-                                          const QString& collectionId,
+VectorStringResult SqlReader::loadStudios(const QString& collectionId,
                                           const QString& parentId) {
     VectorStringResult r;
-    QSqlQuery q(db);
+    QSqlQuery q(m_db);
     q.prepare("SELECT studio FROM studio "
               "WHERE collection_id = ? AND parent_id = ? "
               "ORDER BY studio COLLATE NOCASE");
@@ -111,12 +119,11 @@ VectorStringResult SqlReader::loadStudios(const QSqlDatabase& db,
     return r;
 }
 
-VectorStringResult SqlReader::loadPeople(const QSqlDatabase& db,
-                                         const QString& collectionId,
+VectorStringResult SqlReader::loadPeople(const QString& collectionId,
                                          const QString& parentId,
                                          const QString& personType) {
     VectorStringResult r;
-    QSqlQuery q(db);
+    QSqlQuery q(m_db);
     q.prepare("SELECT name FROM people "
               "WHERE collection_id = ? AND parent_id = ? AND role = ? "
               "ORDER BY sort_order");
@@ -136,10 +143,9 @@ VectorStringResult SqlReader::loadPeople(const QSqlDatabase& db,
     return r;
 }
 
-FolderDataResult SqlReader::loadFolders(const QSqlDatabase& db,
-                                        const QString& collectionId) {
+FolderDataResult SqlReader::loadFolders(const QString& collectionId) {
     FolderDataResult r;
-    QSqlQuery q(db);
+    QSqlQuery q(m_db);
     q.prepare("SELECT folder_id, name FROM folder "
               "WHERE collection_id = ?");
     q.addBindValue(collectionId);
@@ -162,13 +168,12 @@ FolderDataResult SqlReader::loadFolders(const QSqlDatabase& db,
 
 ByteArrayResult SqlReader::loadImage(const QString& parentId) {
     ByteArrayResult r;
-    QSqlDatabase db = QSqlDatabase::database(DEF_SQLITE_CONNECTION);
-    if (!db.isOpen()) {
+    if (!m_db.isOpen()) {
         r.code = MSG_DB_NOT_OPEN;
         r.message = toStandardString(ERROR_MESSAGES[r.code]);
         return r;
     }
-    QSqlQuery q(db);
+    QSqlQuery q(m_db);
     q.prepare("SELECT image FROM image WHERE parent_id = ? ");
     q.addBindValue(parentId);
     if (!q.exec()) {
@@ -187,13 +192,12 @@ ByteArrayResult SqlReader::loadImage(const QString& parentId) {
 
 MoviesDataImp SqlReader::loadMovies(const QString& collectionId) {
     MoviesDataImp r;
-    QSqlDatabase db = QSqlDatabase::database(DEF_SQLITE_CONNECTION);
-    if (!db.isOpen()) {
+    if (!m_db.isOpen()) {
         r.code = MSG_DB_NOT_OPEN;
         r.message = toStandardString(ERROR_MESSAGES[r.code]);
         return r;
     }
-    QSqlQuery q(db);
+    QSqlQuery q(m_db);
     q.prepare("SELECT "
               "id, name, original_title, production_year, runtime, "
               "overview, container, audio_codec, video_codec, width, height, bitrate, "
@@ -232,7 +236,7 @@ MoviesDataImp SqlReader::loadMovies(const QString& collectionId) {
     }
     VectorStringResult vr;
     for (auto&m : r.movies.tMovieData) {
-        vr = loadPeople(db, collectionId, toQString(m.movieId), toQString(ActorPersonType));
+        vr = loadPeople(collectionId, toQString(m.movieId), toQString(ActorPersonType));
         if (vr.code == MSG_OK) {
             m.actors = vr.stringList;
         } else {
@@ -240,7 +244,7 @@ MoviesDataImp SqlReader::loadMovies(const QString& collectionId) {
             r.message = vr.message;
             return r;
         }
-        vr = loadPeople(db, collectionId, toQString(m.movieId), toQString(DirectorPersonType));
+        vr = loadPeople(collectionId, toQString(m.movieId), toQString(DirectorPersonType));
         if (vr.code == MSG_OK) {
             m.directors = vr.stringList;
         } else {
@@ -248,7 +252,7 @@ MoviesDataImp SqlReader::loadMovies(const QString& collectionId) {
             r.message = vr.message;
             return r;
         }
-        vr = loadStudios(db, collectionId, toQString(m.movieId));
+        vr = loadStudios(collectionId, toQString(m.movieId));
         if (vr.code == MSG_OK) {
             m.studios = vr.stringList;
         } else {
@@ -256,7 +260,7 @@ MoviesDataImp SqlReader::loadMovies(const QString& collectionId) {
             r.message = vr.message;
             return r;
         }
-        vr = loadGenres(db, collectionId, toQString(m.movieId));
+        vr = loadGenres(collectionId, toQString(m.movieId));
         if (vr.code == MSG_OK) {
             m.genres = vr.stringList;
         } else {
@@ -265,7 +269,7 @@ MoviesDataImp SqlReader::loadMovies(const QString& collectionId) {
             return r;
         }
     }
-    FolderDataResult fr = loadFolders(db, collectionId);
+    FolderDataResult fr = loadFolders(collectionId);
     if (fr.code != MSG_OK) {
         r.code = fr.code;
         r.message = fr.message;
@@ -279,13 +283,12 @@ MoviesDataImp SqlReader::loadMovies(const QString& collectionId) {
 
 SeriesDataImp SqlReader::loadSeries(const QString& collectionId) {
     SeriesDataImp r;
-    QSqlDatabase db = QSqlDatabase::database(DEF_SQLITE_CONNECTION);
-    if (!db.isOpen()) {
+    if (!m_db.isOpen()) {
         r.code = MSG_DB_NOT_OPEN;
         r.message = toStandardString(ERROR_MESSAGES[r.code]);
         return r;
     }
-    QSqlQuery q(db);
+    QSqlQuery q(m_db);
     q.prepare("SELECT "
               "id, name, original_title, production_year, overview, added_at, imdb_id "
               "FROM series WHERE collection_id = ?"
@@ -312,7 +315,7 @@ SeriesDataImp SqlReader::loadSeries(const QString& collectionId) {
     }
     VectorStringResult vr;
     for (auto& s : r.series.tSeriesData) {
-        vr = loadPeople(db, collectionId, toQString(s.seriesId), toQString(ActorPersonType));
+        vr = loadPeople(collectionId, toQString(s.seriesId), toQString(ActorPersonType));
         if (vr.code == MSG_OK) {
             s.actors = vr.stringList;
         } else {
@@ -320,7 +323,7 @@ SeriesDataImp SqlReader::loadSeries(const QString& collectionId) {
             r.message = vr.message;
             return r;
         }
-        vr = loadPeople(db, collectionId, toQString(s.seriesId), toQString(DirectorPersonType));
+        vr = loadPeople(collectionId, toQString(s.seriesId), toQString(DirectorPersonType));
         if (vr.code == MSG_OK) {
             s.directors = vr.stringList;
         } else {
@@ -328,7 +331,7 @@ SeriesDataImp SqlReader::loadSeries(const QString& collectionId) {
             r.message = vr.message;
             return r;
         }
-        vr = loadStudios(db, collectionId, toQString(s.seriesId));
+        vr = loadStudios(collectionId, toQString(s.seriesId));
         if (vr.code == MSG_OK) {
             s.studios = vr.stringList;
         } else {
@@ -336,7 +339,7 @@ SeriesDataImp SqlReader::loadSeries(const QString& collectionId) {
             r.message = vr.message;
             return r;
         }
-        vr = loadGenres(db, collectionId, toQString(s.seriesId));
+        vr = loadGenres(collectionId, toQString(s.seriesId));
         if (vr.code == MSG_OK) {
             s.genres = vr.stringList;
         } else {
@@ -407,7 +410,7 @@ SeriesDataImp SqlReader::loadSeries(const QString& collectionId) {
         r.series.tEpisodeData.push_back(e);
     }
     for (auto& e : r.series.tEpisodeData) {
-        vr = loadPeople(db, collectionId, toQString(e.episodeId), toQString(ActorPersonType));
+        vr = loadPeople(collectionId, toQString(e.episodeId), toQString(ActorPersonType));
         if (vr.code == MSG_OK) {
             e.actors = vr.stringList;
         } else {
@@ -415,7 +418,7 @@ SeriesDataImp SqlReader::loadSeries(const QString& collectionId) {
             r.message = vr.message;
             return r;
         }
-        vr = loadPeople(db, collectionId, toQString(e.episodeId), toQString(DirectorPersonType));
+        vr = loadPeople(collectionId, toQString(e.episodeId), toQString(DirectorPersonType));
         if (vr.code == MSG_OK) {
             e.directors = vr.stringList;
         } else {
@@ -431,13 +434,12 @@ SeriesDataImp SqlReader::loadSeries(const QString& collectionId) {
 
 HomeVideosDataImp SqlReader::loadHomeVideos(const QString& collectionId) {
     HomeVideosDataImp r;
-    QSqlDatabase db = QSqlDatabase::database(DEF_SQLITE_CONNECTION);
-    if (!db.isOpen()) {
+    if (!m_db.isOpen()) {
         r.code = MSG_DB_NOT_OPEN;
         r.message = toStandardString(ERROR_MESSAGES[r.code]);
         return r;
     }
-    QSqlQuery q(db);
+    QSqlQuery q(m_db);
     q.prepare("SELECT "
               "id, name, production_year, runtime, "
               "overview, container, audio_codec, video_codec, width, height, bitrate, "
@@ -474,7 +476,15 @@ HomeVideosDataImp SqlReader::loadHomeVideos(const QString& collectionId) {
     }
     VectorStringResult vr;
     for (auto& v: r.homeVideos.tHomeVideoData) {
-        vr = loadGenres(db, collectionId, toQString(v.videoId));
+        vr = loadPeople(collectionId, toQString(v.videoId), toQString(AnyPersonType));
+        if (vr.code == MSG_OK) {
+            v.people = vr.stringList;
+        } else {
+            r.code = vr.code;
+            r.message = vr.message;
+            return r;
+        }
+        vr = loadGenres(collectionId, toQString(v.videoId));
         if (vr.code == MSG_OK) {
             v.genres = vr.stringList;
         } else {
@@ -483,7 +493,7 @@ HomeVideosDataImp SqlReader::loadHomeVideos(const QString& collectionId) {
             return r;
         }
     }
-    FolderDataResult fr = loadFolders(db, collectionId);
+    FolderDataResult fr = loadFolders(collectionId);
     if (fr.code != MSG_OK) {
         r.code = fr.code;
         r.message = fr.message;
@@ -497,13 +507,12 @@ HomeVideosDataImp SqlReader::loadHomeVideos(const QString& collectionId) {
 
 MusicVideosDataImp SqlReader::loadMusicVideos(const QString& collectionId) {
     MusicVideosDataImp r;
-    QSqlDatabase db = QSqlDatabase::database(DEF_SQLITE_CONNECTION);
-    if (!db.isOpen()) {
+    if (!m_db.isOpen()) {
         r.code = MSG_DB_NOT_OPEN;
         r.message = toStandardString(ERROR_MESSAGES[r.code]);
         return r;
     }
-    QSqlQuery q(db);
+    QSqlQuery q(m_db);
     q.prepare("SELECT "
               "id, name, production_year, runtime, "
               "overview, container, audio_codec, video_codec, width, height, bitrate, "
@@ -540,7 +549,7 @@ MusicVideosDataImp SqlReader::loadMusicVideos(const QString& collectionId) {
     }
     VectorStringResult vr;
     for (auto& v : r.musicVideos.tMusicVideoData) {
-        vr = loadPeople(db, collectionId, toQString(v.videoId), toQString(ArtistPersonType));
+        vr = loadPeople(collectionId, toQString(v.videoId), toQString(ArtistPersonType));
         if (vr.code == MSG_OK) {
             v.artists = vr.stringList;
         } else {
@@ -548,7 +557,7 @@ MusicVideosDataImp SqlReader::loadMusicVideos(const QString& collectionId) {
             r.message = vr.message;
             return r;
         }
-        vr = loadGenres(db, collectionId, toQString(v.videoId));
+        vr = loadGenres(collectionId, toQString(v.videoId));
         if (vr.code == MSG_OK) {
             v.genres = vr.stringList;
         } else {
@@ -557,7 +566,7 @@ MusicVideosDataImp SqlReader::loadMusicVideos(const QString& collectionId) {
             return r;
         }
     }
-    FolderDataResult fr = loadFolders(db, collectionId);
+    FolderDataResult fr = loadFolders(collectionId);
     if (fr.code != MSG_OK) {
         r.code = fr.code;
         r.message = fr.message;
@@ -571,13 +580,12 @@ MusicVideosDataImp SqlReader::loadMusicVideos(const QString& collectionId) {
 
 MusicDataImp SqlReader::loadMusic(const QString& collectionId) {
     MusicDataImp r;
-    QSqlDatabase db = QSqlDatabase::database(DEF_SQLITE_CONNECTION);
-    if (!db.isOpen()) {
+    if (!m_db.isOpen()) {
         r.code = MSG_DB_NOT_OPEN;
         r.message = toStandardString(ERROR_MESSAGES[r.code]);
         return r;
     }
-    QSqlQuery q(db);
+    QSqlQuery q(m_db);
     q.prepare("SELECT "
               "id, name, production_year, album_artist, runtime, "
               "added_at, musicbrainz_id "
@@ -605,7 +613,7 @@ MusicDataImp SqlReader::loadMusic(const QString& collectionId) {
     }
     VectorStringResult vr;
     for (auto& a : r.music.tAlbumData) {
-        vr = loadPeople(db, collectionId, toQString(a.albumId), toQString(ArtistPersonType));
+        vr = loadPeople(collectionId, toQString(a.albumId), toQString(ArtistPersonType));
         if (vr.code == MSG_OK) {
             a.artists = vr.stringList;
         } else {
@@ -613,7 +621,7 @@ MusicDataImp SqlReader::loadMusic(const QString& collectionId) {
             r.message = vr.message;
             return r;
         }
-        vr = loadGenres(db, collectionId, toQString(a.albumId));
+        vr = loadGenres(collectionId, toQString(a.albumId));
         if (vr.code == MSG_OK) {
             a.genres = vr.stringList;
         } else {
@@ -658,7 +666,7 @@ MusicDataImp SqlReader::loadMusic(const QString& collectionId) {
         r.music.tAudioData.push_back(a);
     }
     for (auto& a : r.music.tAudioData) {
-        vr = loadPeople(db, collectionId, toQString(a.audioId), toQString(ArtistPersonType));
+        vr = loadPeople(collectionId, toQString(a.audioId), toQString(ArtistPersonType));
         if (vr.code == MSG_OK) {
             a.artists = vr.stringList;
         } else {
@@ -666,7 +674,7 @@ MusicDataImp SqlReader::loadMusic(const QString& collectionId) {
             r.message = vr.message;
             return r;
         }
-        vr = loadGenres(db, collectionId, toQString(a.audioId));
+        vr = loadGenres(collectionId, toQString(a.audioId));
         if (vr.code == MSG_OK) {
             a.genres = vr.stringList;
         } else {

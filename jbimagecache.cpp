@@ -2,15 +2,14 @@
 // Name:        jbimagecache.cpp
 // Purpose:     Local cache for covers, etc.
 // Author:      Jan Buchholz
-// Created:     2026-05-17
+// Created:     2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 #include "jbimagecache.h"
 #include "apicall.h"
 #include "conversions.hpp"
-#include "sqlreader.h"
 
-QMap<QString, QPixmap> JBImageCache::m_cache{};
+JBImageCache::JBImageCache(SqlReader& reader) : m_sqlReader(reader) {}
 
 QPixmap JBImageCache::getPixmap(const std::string& itemId, const std::string& tag) {
     QPixmap pix;
@@ -20,8 +19,7 @@ QPixmap JBImageCache::getPixmap(const std::string& itemId, const std::string& ta
     } else {
         // ---Not in cache -> load---
         if (tag == DEF_OFFLINE) {
-            SqlReader sqlReader;
-            ByteArrayResult r = sqlReader.loadImage(toQString(itemId));
+            ByteArrayResult r = m_sqlReader.loadImage(toQString(itemId));
             if (r.code == MSG_OK) {
                 QByteArray bytes = toQByteArray(r.bytes);
                 pix.loadFromData(bytes);

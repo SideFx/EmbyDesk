@@ -56,6 +56,7 @@ private:
     SplashDialog m_splashDialog;
     EmbyDumpDialog m_dumpDialog;
     SqlReader m_sqlReader;
+    JBImageCache m_jbImageCache;
 
     EmbyCollection m_collection;
     int m_itemCount = 0;
@@ -101,6 +102,7 @@ private:
     void loadSettings();
     void enableFunctions();
     void setProxyModels();
+    void deleteModels();
     void resetModelsAndUI();
     void showMessage(msgStatus st, QString msg, int timeout = 0);
     QIcon getIconForCollectionType(const std::string& type);

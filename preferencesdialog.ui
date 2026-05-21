@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>430</width>
+    <width>450</width>
     <height>259</height>
    </rect>
   </property>
@@ -48,9 +48,9 @@
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>5</x>
      <y>10</y>
-     <width>410</width>
+     <width>440</width>
      <height>200</height>
     </rect>
    </property>
@@ -92,7 +92,7 @@
       <rect>
        <x>130</x>
        <y>40</y>
-       <width>261</width>
+       <width>291</width>
        <height>21</height>
       </rect>
      </property>
@@ -138,7 +138,7 @@
       <rect>
        <x>130</x>
        <y>100</y>
-       <width>261</width>
+       <width>291</width>
        <height>21</height>
       </rect>
      </property>
@@ -161,7 +161,7 @@
       <rect>
        <x>130</x>
        <y>130</y>
-       <width>261</width>
+       <width>291</width>
        <height>21</height>
       </rect>
      </property>
@@ -179,7 +179,7 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>381</width>
+       <width>420</width>
        <height>151</height>
       </rect>
      </property>
@@ -191,12 +191,12 @@
        <rect>
         <x>10</x>
         <y>20</y>
-        <width>161</width>
+        <width>201</width>
         <height>16</height>
        </rect>
       </property>
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Max number of Cast/Artists&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of Cast/Artists/People&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QLabel" name="lbl_maxDirectors">
@@ -209,7 +209,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Max number of Directors&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of Directors&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QLabel" name="lbl_maxStudios">
@@ -222,7 +222,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Max number of Studios&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of Studios&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QLabel" name="lbl_maxGenres">
@@ -235,13 +235,13 @@
        </rect>
       </property>
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Max number of Genres&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of Genres&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QSpinBox" name="spb_maxActors">
       <property name="geometry">
        <rect>
-        <x>180</x>
+        <x>210</x>
         <y>20</y>
         <width>61</width>
         <height>22</height>
@@ -260,7 +260,7 @@
      <widget class="QSpinBox" name="spb_maxDirectors">
       <property name="geometry">
        <rect>
-        <x>180</x>
+        <x>210</x>
         <y>50</y>
         <width>61</width>
         <height>22</height>
@@ -279,7 +279,7 @@
      <widget class="QSpinBox" name="spb_maxStudios">
       <property name="geometry">
        <rect>
-        <x>180</x>
+        <x>210</x>
         <y>80</y>
         <width>61</width>
         <height>22</height>
@@ -298,7 +298,7 @@
      <widget class="QSpinBox" name="spb_maxGenres">
       <property name="geometry">
        <rect>
-        <x>180</x>
+        <x>210</x>
         <y>110</y>
         <width>61</width>
         <height>22</height>
@@ -317,7 +317,7 @@
      <widget class="QCheckBox" name="cbx_actors">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>290</x>
         <y>20</y>
         <width>101</width>
         <height>20</height>
@@ -330,7 +330,7 @@
      <widget class="QCheckBox" name="cbx_directors">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>290</x>
         <y>50</y>
         <width>101</width>
         <height>20</height>
@@ -343,7 +343,7 @@
      <widget class="QCheckBox" name="cbx_studios">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>290</x>
         <y>80</y>
         <width>101</width>
         <height>20</height>
@@ -356,7 +356,7 @@
      <widget class="QCheckBox" name="cbx_genres">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>290</x>
         <y>110</y>
         <width>101</width>
         <height>20</height>

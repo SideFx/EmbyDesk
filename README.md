@@ -94,5 +94,14 @@ Offline mode browsing series
 Offline mode browsing music
 ![Screenshot](images/music-offline-macos.png)
 
+Offline mode browsing home videos
+![Screenshot](images/homevideos-offline-macos.png)
+
 Popup "Dump Emby Collections"
 ![Screenshot](images/emby_dump.png)
+
+### Updates
+**2026-05-21:**
+- Added people for home videos 
+- Display runtime in seconds for small clips (< 1 min)
+

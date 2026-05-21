@@ -3,7 +3,7 @@
 // Purpose:     Sheets for different Emby item types
 // Author:      Jan Buchholz
 // Created:     2026-05-01
-// Changed:     2026-05-17
+// Changed:     2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -86,7 +86,7 @@ inline QPixmap makeDummyPixmap(int w, int h, const QColor& bg, const QString& te
     QFont font = p.font();
     font.setPointSize(11);
     p.setFont(font);
-    p.setPen(QColor("#808080"));
+    p.setPen(QColor(0x808080));
     QRect r(0, 0, w, h);
     p.drawText(r, Qt::AlignCenter, text);
     return pm;
@@ -96,17 +96,17 @@ class DummyImages {
 public:
     static const QPixmap& poster() {
         int w = DEF_IMAGE_HEIGHT * 10 / 14;
-        static QPixmap pm = makeDummyPixmap(w, DEF_IMAGE_HEIGHT, QColor("#C0C0C0"), dummyText);
+        static QPixmap pm = makeDummyPixmap(w, DEF_IMAGE_HEIGHT, QColor(0xC0C0C0), dummyText);
         return pm;
     }
     static const QPixmap& frame() {
         int h = DEF_IMAGE_WIDTH * 9 / 16;
-        static QPixmap pm = makeDummyPixmap(DEF_IMAGE_WIDTH, h, QColor("#C0C0C0"), dummyText);
+        static QPixmap pm = makeDummyPixmap(DEF_IMAGE_WIDTH, h, QColor(0xC0C0C0), dummyText);
         return pm;
     }
     static const QPixmap& square() {
         static QPixmap pm = makeDummyPixmap(DEF_IMAGE_WIDTH, DEF_IMAGE_HEIGHT,
-                                            QColor("#C0C0C0"), dummyText);
+                                            QColor(0xC0C0C0), dummyText);
         return pm;
     }
 };
@@ -160,7 +160,7 @@ public:
         layout->addStretch();
         finalizeSheet(this);
     }
-    void setData(const MovieDataInc& data) {
+    void setData(const MovieDataInc& data, JBImageCache& cache) {
         QPixmap pix;
         m_title->setText(toQString(data.name));
         QString originalTitle = toQString(data.originalTitle);
@@ -169,7 +169,7 @@ public:
             m_originalTitle->setVisible(true);
         } else m_originalTitle->setVisible(false);
         if (data.primaryImageTag != "") {
-            pix = JBImageCache::getPixmap(data.primaryImageId, data.primaryImageTag);
+            pix = cache.getPixmap(data.primaryImageId, data.primaryImageTag);
         };
         if (!pix) pix = DummyImages::poster();
         m_cover->setPixmap(pix);
@@ -229,7 +229,7 @@ public:
         layout->addStretch();
         finalizeSheet(this);
     }
-    void setData(const SeriesDataInc& data) {
+    void setData(const SeriesDataInc& data, JBImageCache& cache) {
         QPixmap pix;
         m_title->setText(toQString(data.name));
         QString originalTitle = toQString(data.originalTitle);
@@ -238,7 +238,7 @@ public:
             m_originalTitle->setVisible(true);
         } else m_originalTitle->setVisible(false);
         if (data.primaryImageTag != "") {
-            pix = JBImageCache::getPixmap(data.primaryImageId, data.primaryImageTag);
+            pix = cache.getPixmap(data.primaryImageId, data.primaryImageTag);
         };
         if (!pix) pix = DummyImages::poster();
         m_cover->setPixmap(pix);
@@ -281,11 +281,11 @@ public:
         layout->addStretch();
         finalizeSheet(this);
     }
-    void setData(const SeasonDataInc& data, const QStringList episodeNames) {
+    void setData(const SeasonDataInc& data, const QStringList episodeNames, JBImageCache& cache) {
         QPixmap pix;
         m_title->setText(toQString(data.name));
         if (data.primaryImageTag != "") {
-            pix = JBImageCache::getPixmap(data.primaryImageId, data.primaryImageTag);
+            pix = cache.getPixmap(data.primaryImageId, data.primaryImageTag);
         };
         if (!pix) pix = DummyImages::poster();
         m_cover->setPixmap(pix);
@@ -326,7 +326,7 @@ public:
         layout->addStretch();
         finalizeSheet(this);
     }
-    void setData(const EpisodeDataInc& data) {
+    void setData(const EpisodeDataInc& data, JBImageCache& cache) {
         QPixmap pix;
         m_title->setText(toQString(data.name));
         QString originalTitle = toQString(data.originalTitle);
@@ -335,7 +335,7 @@ public:
             m_originalTitle->setVisible(true);
         } else m_originalTitle->setVisible(false);
         if (data.primaryImageTag != "") {
-            pix = JBImageCache::getPixmap(data.primaryImageId, data.primaryImageTag);
+            pix = cache.getPixmap(data.primaryImageId, data.primaryImageTag);
         };
         if (!pix) pix = DummyImages::frame();
         m_cover->setPixmap(pix);
@@ -368,6 +368,10 @@ public:
         m_cover = makeCoverLabel(this);
         layout->addWidget(m_cover);
         layout->setAlignment(m_cover, Qt::AlignTop);
+        m_peopleModel = new QStringListModel(this);
+        m_peopleView  = new QListView(this);
+        m_peopleView->setModel(m_peopleModel);
+        layout->addWidget(makeGroupWidget(c_txt_people, m_peopleView, this));
         m_genreModel = new QStringListModel(this);
         m_genreView  = new QListView(this);
         m_genreView->setModel(m_genreModel);
@@ -377,14 +381,15 @@ public:
         layout->addStretch();
         finalizeSheet(this);
     }
-    void setData(const HomeVideoDataInc& data) {
+    void setData(const HomeVideoDataInc& data, JBImageCache& cache) {
         QPixmap pix;
         m_title->setText(toQString(data.name));
         if (data.primaryImageTag != "") {
-            pix = JBImageCache::getPixmap(data.primaryImageId, data.primaryImageTag);
+            pix = cache.getPixmap(data.primaryImageId, data.primaryImageTag);
         };
         if (!pix) pix = DummyImages::frame();
         m_cover->setPixmap(pix);
+        m_peopleModel->setStringList(toQStringList(data.people));
         m_genreModel->setStringList(toQStringList(data.genres));
         listViewSetVisibleRows(m_genreView, c_maxVisibleGenres);
         m_overview->setText(toQString(data.overview));
@@ -393,7 +398,9 @@ public:
 private:
     QLabel* m_title;
     QLabel* m_cover;
+    QStringListModel* m_peopleModel;
     QStringListModel* m_genreModel;
+    QListView* m_peopleView;
     QListView* m_genreView;
     QTextBrowser* m_overview;
 };
@@ -421,11 +428,11 @@ public:
         layout->addStretch();
         finalizeSheet(this);
     }
-    void setData(const MusicVideoDataInc& data) {
+    void setData(const MusicVideoDataInc& data, JBImageCache& cache) {
         QPixmap pix;
         m_title->setText(toQString(data.name));
         if (data.primaryImageTag != "") {
-            pix = JBImageCache::getPixmap(data.primaryImageId, data.primaryImageTag);
+            pix = cache.getPixmap(data.primaryImageId, data.primaryImageTag);
         };
         if (!pix) pix = DummyImages::frame();
         m_cover->setPixmap(pix);
@@ -473,11 +480,11 @@ public:
         layout->addStretch();
         finalizeSheet(this);
     }
-    void setData(const AlbumDataInc& data, QStringList trackNames) {
+    void setData(const AlbumDataInc& data, QStringList trackNames, JBImageCache& cache) {
         QPixmap pix;
         m_title->setText(toQString(data.name));
         if (data.primaryImageTag != "") {
-            pix = JBImageCache::getPixmap(data.primaryImageId, data.primaryImageTag);
+            pix = cache.getPixmap(data.primaryImageId, data.primaryImageTag);
         };
         if (!pix) pix = DummyImages::square();
         m_cover->setPixmap(pix);
@@ -524,11 +531,11 @@ public:
         layout->addStretch();
         finalizeSheet(this);
     }
-    void setData(const AudioDataInc& data) {
+    void setData(const AudioDataInc& data, JBImageCache& cache) {
         QPixmap pix;
         m_title->setText(toQString(data.name));
         if (data.primaryImageTag != "") {
-            pix = JBImageCache::getPixmap(data.primaryImageId, data.primaryImageTag);
+            pix = cache.getPixmap(data.primaryImageId, data.primaryImageTag);
         };
         if (!pix) pix = DummyImages::square();
         m_cover->setPixmap(pix);

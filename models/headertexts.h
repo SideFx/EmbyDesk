@@ -3,7 +3,7 @@
 // Purpose:     Header texts used in models, sheets & export
 // Author:      Jan Buchholz
 // Created:     2026-05-06
-// Changed:     2026-05-08
+// Changed:     2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -42,3 +42,4 @@ inline QString const c_txt_overview = QObject::tr("Overview");
 inline QString const c_txt_episodes = QObject::tr("Episodes");
 inline QString const c_txt_tracks = QObject::tr("Tracks");
 inline QString const c_txt_artists = QObject::tr("Artists");
+inline QString const c_txt_people = QObject::tr("People");

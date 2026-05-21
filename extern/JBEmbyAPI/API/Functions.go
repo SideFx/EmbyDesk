@@ -3,7 +3,7 @@
 // Purpose:     Exported functions
 // Author:      Jan Buchholz
 // Created:     2026-04-15
-// Last update: 2026-05-14
+// Last update: 2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 package API
@@ -230,6 +230,7 @@ func UserGetHomeVideos(baseurl string, collectionid string, userid string, acces
 			video := HomeVideoDataInc{}
 			video.Name = item.Name
 			video.ProductionYear = item.ProductionYear
+			video.People = evalPersons(item.People, AnyPersonType)
 			video.Genres = evalNameLongIdPairs(item.GenreItems)
 			video.Overview = item.Overview
 			video.Container = item.Container

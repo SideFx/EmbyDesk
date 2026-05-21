@@ -3,7 +3,7 @@
 // Purpose:     Data types for JBEmbyAPI
 // Author:      Jan Buchholz
 // Created:     2026-04-13
-// Last update: 2026-05-10
+// Last update: 2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 package API
@@ -135,6 +135,7 @@ var SeriesTable = DataDescription[SeriesData]{
 type HomeVideoDataInc struct {
 	Name            string   `json:"Name"`
 	ProductionYear  int32    `json:"ProductionYear"`
+	People          []string `json:"People"`
 	Genres          []string `json:"Genres"`
 	Runtime         int64    `json:"Runtime"`
 	Overview        string   `json:"Overview"`
@@ -163,7 +164,7 @@ var HomeVideoTable = DataDescription[HomeVideoData]{
 	CollectionHomeVideos,
 	[]string{VideoType, FolderType},
 	[]string{"Name", "MediaSources", "FileName", "Genres", "Width", "Height", "Container",
-		"Genres", "ProductionYear", "RunTimeTicks", "DateCreated", "Id", "ParentId", "Type"},
+		"People", "Genres", "ProductionYear", "RunTimeTicks", "DateCreated", "Id", "ParentId", "Type"},
 	HomeVideoData{},
 }
 

@@ -3,7 +3,7 @@
 // Purpose:     Export collection as Excel worksheet
 // Author:      Jan Buchholz
 // Created:     2026-05-07
-// Changed:     2026-05-10
+// Changed:     2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 #include "excelexport.h"
@@ -84,6 +84,7 @@ ExcelExport::ExcelExport() {
         {LookUpKeys::year, [](auto& d){ return int32ToYear(d.productionYear); }},
         {LookUpKeys::runtime, [](auto& d){ return int64ToRuntimeMinutes(d.runtime); }},
         {LookUpKeys::resolution, [](auto& d){ return resolutionValue(d.width, d.height); }},
+        {LookUpKeys::people, [max_cast](auto& d){ return joinList(d.people, max_cast); }},
         {LookUpKeys::genres, [max_genres](auto& d){ return joinList(d.genres, max_genres); }},
         {LookUpKeys::container, [](auto& d){ return toQString(d.container); }},
         {LookUpKeys::videocodec, [](auto& d){ return toQString(d.videoCodec); }},
@@ -292,7 +293,7 @@ QVector<ExcelExport::ExportHeaders> ExcelExport::createHeaders(QString collectio
             {LookUpKeys::container, c_txt_container, 10, l},
             {LookUpKeys::videocodec, c_txt_videocodec, 15, l},
             {LookUpKeys::audiocodec, c_txt_audiocodec, 15, l},
-            {LookUpKeys::bitrate, c_txt_bitrate, 10, r},
+            {LookUpKeys::bitrate, c_txt_bitrate, 15, r},
             {LookUpKeys::imdbid, c_txt_imdbid, 15, l},
             {LookUpKeys::filesize, c_txt_filesize, 15, r},
             {LookUpKeys::filename, c_txt_filename, 80, l},
@@ -313,7 +314,7 @@ QVector<ExcelExport::ExportHeaders> ExcelExport::createHeaders(QString collectio
             {LookUpKeys::container, c_txt_container, 10, l},
             {LookUpKeys::videocodec, c_txt_videocodec, 15, l},
             {LookUpKeys::audiocodec, c_txt_audiocodec, 10, l},
-            {LookUpKeys::bitrate, c_txt_bitrate, 10, r},
+            {LookUpKeys::bitrate, c_txt_bitrate, 15, r},
             {LookUpKeys::imdbid, c_txt_imdbid, 15, l},
             {LookUpKeys::filesize, c_txt_filesize, 15, r},
             {LookUpKeys::filename, c_txt_filename, 80, l},
@@ -325,11 +326,12 @@ QVector<ExcelExport::ExportHeaders> ExcelExport::createHeaders(QString collectio
             {LookUpKeys::year, c_txt_year, 10, r},
             {LookUpKeys::runtime, c_txt_runtime, 10, r},
             {LookUpKeys::resolution, c_txt_resolution, 10, r},
+            {LookUpKeys::people, c_txt_people, 50, l},
             {LookUpKeys::genres, c_txt_genres, 50, l},
             {LookUpKeys::container, c_txt_container, 10, l},
             {LookUpKeys::videocodec, c_txt_videocodec, 15, l},
             {LookUpKeys::audiocodec, c_txt_audiocodec, 15, l},
-            {LookUpKeys::bitrate, c_txt_bitrate, 10, r},
+            {LookUpKeys::bitrate, c_txt_bitrate, 15, r},
             {LookUpKeys::filesize, c_txt_filesize, 15, r},
             {LookUpKeys::filename, c_txt_filename, 80, l},
             {LookUpKeys::addedat, c_txt_addedat, 15, r},
@@ -345,7 +347,7 @@ QVector<ExcelExport::ExportHeaders> ExcelExport::createHeaders(QString collectio
             {LookUpKeys::container, c_txt_container, 10, l},
             {LookUpKeys::videocodec, c_txt_videocodec, 15, l},
             {LookUpKeys::audiocodec, c_txt_audiocodec, 15, l},
-            {LookUpKeys::bitrate, c_txt_bitrate, 10, r},
+            {LookUpKeys::bitrate, c_txt_bitrate, 15, r},
             {LookUpKeys::filesize, c_txt_filesize, 15, r},
             {LookUpKeys::filename, c_txt_filename, 80, l},
             {LookUpKeys::addedat, c_txt_addedat, 15, r},
@@ -360,7 +362,7 @@ QVector<ExcelExport::ExportHeaders> ExcelExport::createHeaders(QString collectio
             {LookUpKeys::genres, c_txt_genres, 50, l},
             {LookUpKeys::container, c_txt_container, 10, l},
             {LookUpKeys::audiocodec, c_txt_audiocodec, 15, l},
-            {LookUpKeys::bitrate, c_txt_bitrate, 10, r},
+            {LookUpKeys::bitrate, c_txt_bitrate, 15, r},
             {LookUpKeys::filesize, c_txt_filesize, 15, r},
             {LookUpKeys::filename, c_txt_filename, 50, l},
             {LookUpKeys::addedat, c_txt_addedat, 15, r},

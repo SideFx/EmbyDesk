@@ -2,7 +2,7 @@
 // Name:        lookupkeys.h
 // Purpose:     Lookup keys used in export functions
 // Author:      Jan Buchholz
-// Created:     2026-05-07
+// Created:     2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -12,6 +12,7 @@ inline constexpr auto addedat       = "addedat";
 inline constexpr auto album         = "album";
 inline constexpr auto albumartist   = "albumartist";
 inline constexpr auto artists       = "artists";
+inline constexpr auto people        = "people";
 inline constexpr auto audiocodec    = "audiocodec";
 inline constexpr auto bitrate       = "bitrate";
 inline constexpr auto cast          = "cast";

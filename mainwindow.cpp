@@ -3,7 +3,7 @@
 // Purpose:     The main window
 // Author:      Jan Buchholz
 // Created:     2026-04-23
-// Changed:     2026-05-19
+// Changed:     2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 #include "mainwindow.h"
@@ -22,7 +22,10 @@
 #include "excelexport.h"
 #include "appsettings.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+                                          ui(new Ui::MainWindow),
+                                          m_sqlReader(),
+                                          m_jbImageCache(m_sqlReader) {
     ui->setupUi(this);
     setWindowTitle(QString(APP_NAME) + " v" + APP_VERSION);
     setMinimumSize(DEF_WINDOW_MINSIZE);
@@ -31,7 +34,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     createStatusBar();
     setCentralWidget(m_mainSplitter);
     m_offlineMode = false;
-    // --satisfy macOS---
     APICall::sendNetworkBroadcast();
     loadSettings();
     showSplashScreen();
@@ -43,7 +45,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 MainWindow::~MainWindow() {
     delete ui;
-    m_sqlReader.closeDBConnection();
 }
 
 void MainWindow::createToolBar() {
@@ -429,7 +430,7 @@ void MainWindow::onActionDump() {
             this,
             &MainWindow::onReceivePathInfo,
             Qt::UniqueConnection);
-    m_dumpDialog.setSQLiteDirectory(m_lastFolderDb);
+    m_dumpDialog.setDlgDefaults(m_lastFolderDb);
     m_dumpDialog.exec();
     ui->actionOffline->setEnabled(true);
 }
@@ -643,7 +644,7 @@ void MainWindow::loadSheetForItem(const QModelIndex &sourceIndex) {
         MovieTreeModel::Node* node = movieModel->itemAt(sourceIndex);
         if (node->type == MovieTreeModel::Node::Type::Movie) {
             auto* data = movieModel->movieData(node);
-            m_movieSheet->setData(*data);
+            m_movieSheet->setData(*data, m_jbImageCache);
             m_sheets->setCurrentWidget(m_movieSheet);
         }
         return;
@@ -654,20 +655,20 @@ void MainWindow::loadSheetForItem(const QModelIndex &sourceIndex) {
         switch (node->type) {
             case SeriesTreeModel::Node::Type::Series: {
                 auto* data = seriesModel->seriesData(node);
-                m_seriesSheet->setData(*data);
+                m_seriesSheet->setData(*data, m_jbImageCache);
                 m_sheets->setCurrentWidget(m_seriesSheet);
                 break;
             }
             case SeriesTreeModel::Node::Type::Season:  {
                 auto* data = seriesModel->seasonData(node);
                 auto episodeNames = seriesModel->episodeNamesForSeason(node);
-                m_seasonSheet->setData(*data, episodeNames);
+                m_seasonSheet->setData(*data, episodeNames, m_jbImageCache);
                 m_sheets->setCurrentWidget(m_seasonSheet);
                 break;
             }
             case SeriesTreeModel::Node::Type::Episode: {
                 auto* data = seriesModel->episodeData(node);
-                m_episodeSheet->setData(*data);
+                m_episodeSheet->setData(*data, m_jbImageCache);
                 m_sheets->setCurrentWidget(m_episodeSheet);
                 break;
             }
@@ -679,7 +680,7 @@ void MainWindow::loadSheetForItem(const QModelIndex &sourceIndex) {
         HomeVideoTreeModel::Node* node = homeVideoModel->itemAt(sourceIndex);
         if (node->type == HomeVideoTreeModel::Node::Type::HomeVideo) {
             auto* data = homeVideoModel->homeVideoData(node);
-            m_homeVideoSheet->setData(*data);
+            m_homeVideoSheet->setData(*data, m_jbImageCache);
             m_sheets->setCurrentWidget(m_homeVideoSheet);
         }
         return;
@@ -689,7 +690,7 @@ void MainWindow::loadSheetForItem(const QModelIndex &sourceIndex) {
         MusicVideoTreeModel::Node* node = musicVideoModel->itemAt(sourceIndex);
         if (node->type == MusicVideoTreeModel::Node::Type::MusicVideo) {
             auto* data = musicVideoModel->musicVideoData(node);
-            m_musicVideoSheet->setData(*data);
+            m_musicVideoSheet->setData(*data, m_jbImageCache);
             m_sheets->setCurrentWidget(m_musicVideoSheet);
         }
         return;
@@ -701,13 +702,13 @@ void MainWindow::loadSheetForItem(const QModelIndex &sourceIndex) {
             case MusicTreeModel::Node::Type::Album: {
                 auto* data = musicModel->albumData(node);
                 auto trackNames = musicModel->trackNamesForAlbum(node);
-                m_albumSheet->setData(*data, trackNames);
+                m_albumSheet->setData(*data, trackNames, m_jbImageCache);
                 m_sheets->setCurrentWidget(m_albumSheet);
                 break;
             }
             case MusicTreeModel::Node::Type::Audio:  {
                 auto* data = musicModel->audioData(node);
-                m_trackSheet->setData(*data);
+                m_trackSheet->setData(*data, m_jbImageCache);
                 m_sheets->setCurrentWidget(m_trackSheet);
                 break;
             }

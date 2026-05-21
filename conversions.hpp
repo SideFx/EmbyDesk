@@ -3,7 +3,7 @@
 // Purpose:     Simple conversion and evaluation functions
 // Author:      Jan Buchholz
 // Created:     2026-04-26
-// Changed:     2026-05-12
+// Changed:     2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -72,7 +72,8 @@ inline QString int64ToRuntimeMinutes(int64_t ticks) {
     if (ticks <= 0) return {};
     int64_t seconds = ticks / 10'000'000;
     int64_t minutes = seconds / 60;
-    return QString::number(minutes) + " min";
+    if (minutes > 0) return QString::number(minutes) + " min";
+    return QString::number(seconds) + " sec";
 }
 
 inline QString int64ToRuntimeHMS(int64_t ticks) {

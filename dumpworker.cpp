@@ -3,7 +3,7 @@
 // Purpose:    Perform dump of Emby collections
 // Author:     Jan Buchholz
 // Created:    2026-05-09
-// Changed:    2026-05-18
+// Changed:    2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 #include "dumpworker.h"
@@ -648,6 +648,19 @@ bool DumpWorker::processCollection(UserView& view) {
             if (!q.exec()) {
                 emit log(tr("ERROR inserting into table 'homevideo' ") + lastDBError(q));
                 return false;
+            }
+            QSqlQuery qp(m_db);
+            qp.prepare(prepareInsertPeople);
+            sort_order = 0;
+            for (auto& p : v.people) {
+                qp.bindValue(":collection_id", toQString(view.id));
+                qp.bindValue(":parent_id", toQString(v.videoId));
+                qp.bindValue(":name", toQString(p));
+                qp.bindValue(":role", toQString(AnyPersonType));
+                qp.bindValue(":sort_order", ++sort_order);
+                if (!qp.exec()) {
+                    emit log(tr("ERROR inserting into table 'person' ") + lastDBError(qp));
+                }
             }
             QSqlQuery qg(m_db);
             qg.prepare(prepareInsertGenre);

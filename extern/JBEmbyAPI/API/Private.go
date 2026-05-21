@@ -248,7 +248,7 @@ func evalPersons(persons []BaseItemPerson, types ...string) []string {
 	personsFound := make([]string, 0, len(persons))
 	for _, p := range persons {
 		for _, t := range types {
-			if p.Type == t {
+			if p.Type == t || t == AnyPersonType {
 				personsFound = append(personsFound, p.Name)
 			}
 		}

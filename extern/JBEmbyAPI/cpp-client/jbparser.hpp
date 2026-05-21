@@ -3,7 +3,7 @@
 // Purpose:     Json parser and data definitions
 // Author:      Jan Buchholz (Copilot generated the json stuff)
 // Created:     2026-04-24
-// Last update: 2026-05-17
+// Last update: 2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -28,9 +28,10 @@ constexpr std::string_view AudioType      = "Audio";
 constexpr std::string_view MusicVideoType = "MusicVideo";
 constexpr std::string_view MusicAlbumType = "MusicAlbum";
 
-constexpr std::string_view ActorPersonType = "Actor";
+constexpr std::string_view ActorPersonType    = "Actor";
 constexpr std::string_view DirectorPersonType = "Director";
-constexpr std::string_view ArtistPersonType = "Artist";
+constexpr std::string_view ArtistPersonType   = "Artist";
+constexpr std::string_view AnyPersonType      = "AnyPerson";
 
 constexpr std::string_view MediaTypeAudio = "Audio";
 
@@ -323,6 +324,7 @@ inline SeriesDataImp parseSeries(const std::string& raw) {
 struct HomeVideoDataInc {
     std::string name;
     int32_t productionYear = 0;
+    std::vector<std::string> people;
     std::vector<std::string> genres;
     int64_t runtime = 0;
     std::string overview;
@@ -366,6 +368,7 @@ inline HomeVideosDataImp parseHomeVideos(const std::string& raw) {
         HomeVideoDataInc h;
         h.name            = hv["Name"].get<std::string>();
         h.productionYear  = hv["ProductionYear"].get<int32_t>();
+        h.people          = hv["People"].get<std::vector<std::string>>();
         h.genres          = hv["Genres"].get<std::vector<std::string>>();
         h.runtime         = hv["Runtime"].get<int64_t>();
         h.overview        = hv["Overview"].get<std::string>();

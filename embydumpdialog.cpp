@@ -3,7 +3,7 @@
 // Purpose:    Popup to prepare and view progress of dump of Emby collections
 // Author:     Jan Buchholz
 // Created:    2026-05-09
-// Changed:    2026-05-19
+// Changed:    2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 #include "embydumpdialog.h"
@@ -46,7 +46,7 @@ EmbyDumpDialog::~EmbyDumpDialog() {
     delete ui;
 }
 
-void EmbyDumpDialog::setSQLiteDirectory(const QString& dir) {
+void EmbyDumpDialog::setDlgDefaults(const QString& dir) {
     m_directory = (dir.isEmpty())
     ? QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
     : dir;
@@ -57,6 +57,9 @@ void EmbyDumpDialog::setSQLiteDirectory(const QString& dir) {
                DEF_SQLITE_SUFFIX;
     ui->edt_path->setText(m_directory);
     ui->edt_filename->setText(dbName);
+    m_btnDump->setVisible(true);
+    m_btnDump->setEnabled(true);
+    ui->edt_logger->setPlainText(c_msg + "\n");
 }
 
 void EmbyDumpDialog::onSelect() {

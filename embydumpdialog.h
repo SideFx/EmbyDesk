@@ -3,7 +3,7 @@
 // Purpose:    Popup to prepare and view progress of dump of Emby collections
 // Author:     Jan Buchholz
 // Created:    2026-05-09
-// Changed:    2026-05-18
+// Changed:    2026-05-21
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -21,7 +21,7 @@ public:
     explicit EmbyDumpDialog(QWidget *parent = nullptr);
     ~EmbyDumpDialog();
 
-    void setSQLiteDirectory(const QString& dir);
+    void setDlgDefaults(const QString& dir);
 
 signals:
     void sendPathInfo(const QString& directory, const QString& dbName);
