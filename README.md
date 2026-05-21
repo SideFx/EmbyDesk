@@ -74,7 +74,7 @@ EmbyDesk uses a deliberately simple SQLite schema:
 - Copilot Assistance - Copilot was especially helpful with:
 	- Loading the Go shared library and registering exported functions
 	- Generating JSON parser functions for the C++ data structures
-	- Supporting SQLite programming patterns and schema design
+	- Supporting SQLite syntax
 
 ### Screenshots
 
