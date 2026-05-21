@@ -86,11 +86,19 @@ install(TARGETS EmbyDesk
 )
 
 if(APPLE)
+    get_filename_component(QT_BIN_DIR "${Qt6_DIR}/../../../bin" ABSOLUTE)
+    find_program(MACDEPLOYQT macdeployqt6 HINTS "${QT_BIN_DIR}")
     add_custom_command(TARGET EmbyDesk POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory
             "$<TARGET_FILE_DIR:EmbyDesk>/../Frameworks"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${JBEmbyAPI_LIB}"
             "$<TARGET_FILE_DIR:EmbyDesk>/../Frameworks/"
+    )
+    add_custom_command(TARGET EmbyDesk POST_BUILD
+        COMMAND ${MACDEPLOYQT} "$<TARGET_BUNDLE_DIR:EmbyDesk>" -verbose=2
+    )
+    add_custom_command(TARGET EmbyDesk POST_BUILD
+        COMMAND codesign --force --deep --sign - --timestamp=none "$<TARGET_BUNDLE_DIR:EmbyDesk>"
     )
 endif()
