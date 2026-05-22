@@ -71,6 +71,7 @@ EmbyDesk uses a deliberately simple SQLite schema:
 
 - Emby - For providing the API structures and documentation.
 - nlohmann/json - For the excellent single‑header JSON library used in the C++ layer.
+- Daniel Nicoletti (dantti) and Jay Two (j2Doll) for QXlsx.
 - Copilot Assistance - Copilot was especially helpful with:
 	- Loading the Go shared library and registering exported functions
 	- Generating JSON parser functions for the C++ data structures
