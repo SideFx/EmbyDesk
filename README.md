@@ -105,3 +105,6 @@ Popup "Dump Emby Collections"
 - Added people for home videos 
 - Display runtime in seconds for small clips (< 1 min)
 
+**2026-05-22:**
+- Fixed "Overview" for homevideos not being displayed
+

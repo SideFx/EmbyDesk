@@ -55,7 +55,7 @@ void SeriesTreeModel::setData(const SeriesData& data) {
     std::sort(m_series.begin(), m_series.end(),
               [](auto *a, auto *b) {
                   return a->data.name < b->data.name;
-              });
+    });
     endResetModel();
 }
 
