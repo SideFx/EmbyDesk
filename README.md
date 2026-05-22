@@ -28,7 +28,7 @@ EmbyDesk supports all major Emby media categories:
 🧭 **UI & Navigation**
 
 Hierarchical Views:
-- Tree view for Music (Artist → Album → Track)
+- Tree view for Music (Album → Track)
 - Tree view for Series (Series → Seasons → Episodes)
 
 Detail Sheets - Dedicated detail pages for every media type:
@@ -103,7 +103,7 @@ Popup "Dump Emby Collections"
 
 ### Updates
 **2026-05-21:**
-- Added people for home videos 
+- Added "people" for homevideos 
 - Display runtime in seconds for small clips (< 1 min)
 
 **2026-05-22:**
