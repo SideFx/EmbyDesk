@@ -10,6 +10,7 @@ add_subdirectory(extern/QXlsx/QXlsx/)
 
 qt_add_executable(EmbyDesk
     WIN32 MACOSX_BUNDLE
+    MANUAL_FINALIZATION
     main.cpp
     mainwindow.cpp
     mainwindow.h
@@ -102,3 +103,8 @@ if(APPLE)
         COMMAND codesign --force --deep --sign - --timestamp=none "$<TARGET_BUNDLE_DIR:EmbyDesk>"
     )
 endif()
+
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_finalize_executable(EmbyDesk)
+endif()
+
