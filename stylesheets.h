@@ -3,7 +3,7 @@
 // Purpose:     Style sheets for QToolBar & QToolButton
 // Author:      Jan Buchholz
 // Created:     2025-10-13
-// Changed:     2026-04-08
+// Changed:     2026-05-22
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -59,9 +59,9 @@ QString styleToolBar = R"(
 // reduce the size of the splitter handle for macOS
 QString styleSplitterHandle = R"(
         QSplitter::handle:horizontal {
-            width: 3px;
+            width: 1px;
         }
         QSplitter::handle:vertical {
-            height: 3px;
+            height: 1px;
         }
 )";

@@ -6,7 +6,7 @@ A cross‑platform desktop application for browsing, exporting, and analyzing yo
 🧭 **Architecture**
 - Backend written in Go, using a cgo layer to expose the JBEmbyAPI shared library
 → see the corresponding JBEmbyAPI project
-- Frontend written in modern C++, built with Qt 6.11
+- Frontend written in modern C++, built with Qt 6.11, fully aligned with Qt‑RAII
 - Clean separation of concerns: Go handles API + data, C++ handles UI + presentation
 - EmbyDesk uses separate data models for each collection type, ensuring clean separation, strong typing, and predictable behavior across the UI and export layers.
 
@@ -108,4 +108,5 @@ Popup "Dump Emby Collections"
 
 **2026-05-22:**
 - Fixed "Overview" for homevideos not being displayed
+
 
