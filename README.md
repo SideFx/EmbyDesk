@@ -109,4 +109,6 @@ Popup "Dump Emby Collections"
 **2026-05-22:**
 - Fixed "Overview" for homevideos not being displayed
 
+**2026-5-25:**
+- macOS, forgot to set unifiedTitleAndToolbar, fixed
 
