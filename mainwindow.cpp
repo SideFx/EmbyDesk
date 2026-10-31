@@ -3,7 +3,7 @@
 // Purpose:     The main window
 // Author:      Jan Buchholz
 // Created:     2026-04-23
-// Changed:     2026-05-21
+// Changed:     2026-11-01
 /////////////////////////////////////////////////////////////////////////////
 
 #include "mainwindow.h"
@@ -57,7 +57,7 @@ void MainWindow::createToolBar() {
     m_mainToolBar->setFixedHeight(DEF_TOOLBAR_HEIGHT);
 #if defined(Q_OS_WIN)
     m_mainToolBar->setStyleSheet(styleToolBar);
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_APPLE)
     m_mainToolBar->setStyleSheet(styleToolButton);
 #endif
     m_mainToolBar->addAction(ui->actionSettings);
@@ -90,7 +90,7 @@ void MainWindow::createMainControls() {
     m_mainSplitter = new QSplitter(this);
     m_mainSplitter->setObjectName("mainSplitter");
     m_mainSplitter->setOrientation(Qt::Horizontal);
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_APPLE)
     m_mainSplitter->setStyleSheet(styleSplitterHandle);
 #endif
     m_tree = new QTreeView(m_mainSplitter);
@@ -126,7 +126,7 @@ void MainWindow::createMainControls() {
 
 void MainWindow::createStatusBar() {
     m_statusBar = new QStatusBar(this);
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_APPLE)
     m_statusBar->setStyleSheet("QStatusBar {background: lightGray;}");
 #endif
     auto* container = new QWidget(this);

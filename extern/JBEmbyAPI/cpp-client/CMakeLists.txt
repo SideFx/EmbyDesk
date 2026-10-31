@@ -17,12 +17,13 @@ endif()
 # Custom command: Go-Library bauen
 file(GLOB GO_SOURCES ${GO_SRC_DIR}/export/*.go)
 
-# cmake did not find the go binary under macOS (although it's in /etc/paths)
-# looks clumsy, but at least it works
+
+find_program(GO_EXECUTABLE go REQUIRED)
+
 if(APPLE)
     add_custom_command(
         OUTPUT ${OUTPUT_DIR}/${GO_LIB_FILE}
-        COMMAND /usr/local/go/bin/go build -buildmode=c-shared -o ${OUTPUT_DIR}/${GO_LIB_FILE} ${GO_SRC_DIR}/export
+        COMMAND ${GO_EXECUTABLE} build -buildmode=c-shared -o ${OUTPUT_DIR}/${GO_LIB_FILE} ${GO_SRC_DIR}/export
         WORKING_DIRECTORY ${GO_SRC_DIR}
         DEPENDS ${GO_SOURCES}
         COMMENT "Building Go shared library..."
