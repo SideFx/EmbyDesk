@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           m_sqlReader(),
                                           m_jbImageCache(m_sqlReader) {
     ui->setupUi(this);
+    setAutoFillBackground(true);
     setWindowTitle(QString(APP_NAME) + " v" + APP_VERSION);
     setMinimumSize(DEF_WINDOW_MINSIZE);
     setIcons();
