@@ -3,12 +3,12 @@
 // Purpose:     The main window
 // Author:      Jan Buchholz
 // Created:     2026-04-23
-// Changed:     2026-11-01
+// Changed:     2026-11-06
 /////////////////////////////////////////////////////////////////////////////
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "stylesheets.h"
+#include "jbstyles.hpp"
 #include "preferencesdialog.h"
 #include "jbpreferences.h"
 #include "conversions.hpp"
@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     ui->setupUi(this);
     setWindowTitle(QString(APP_NAME) + " v" + APP_VERSION);
     setMinimumSize(DEF_WINDOW_MINSIZE);
+    setIcons();
     createToolBar();
     createMainControls();
     createStatusBar();
@@ -50,16 +51,12 @@ MainWindow::~MainWindow() {
 void MainWindow::createToolBar() {
     m_mainToolBar = new QToolBar(this);
     m_mainToolBar->setObjectName("mainToolBar");
+    m_mainToolBar->setStyleSheet(styleToolBar);
     m_mainToolBar->setMovable(false);
     m_mainToolBar->setOrientation(Qt::Horizontal);
-    m_mainToolBar->setAutoFillBackground(true);
+    m_mainToolBar->setAutoFillBackground(false);
     m_mainToolBar->setIconSize(QSize(DEF_ICONSIZE, DEF_ICONSIZE));
     m_mainToolBar->setFixedHeight(DEF_TOOLBAR_HEIGHT);
-#if defined(Q_OS_WIN)
-    m_mainToolBar->setStyleSheet(styleToolBar);
-#elif defined(Q_OS_APPLE)
-    m_mainToolBar->setStyleSheet(styleToolButton);
-#endif
     m_mainToolBar->addAction(ui->actionSettings);
     m_mainToolBar->addAction(ui->actionLogin);
     m_mainToolBar->addSeparator();
@@ -90,9 +87,7 @@ void MainWindow::createMainControls() {
     m_mainSplitter = new QSplitter(this);
     m_mainSplitter->setObjectName("mainSplitter");
     m_mainSplitter->setOrientation(Qt::Horizontal);
-#if defined(Q_OS_APPLE)
     m_mainSplitter->setStyleSheet(styleSplitterHandle);
-#endif
     m_tree = new QTreeView(m_mainSplitter);
     m_tree->setAlternatingRowColors(true);
     m_tree->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -126,9 +121,7 @@ void MainWindow::createMainControls() {
 
 void MainWindow::createStatusBar() {
     m_statusBar = new QStatusBar(this);
-#if defined(Q_OS_APPLE)
-    m_statusBar->setStyleSheet("QStatusBar {background: lightGray;}");
-#endif
+    m_statusBar->setStyleSheet(styleStatusBar);
     auto* container = new QWidget(this);
     auto* layout = new QHBoxLayout(container);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -146,6 +139,18 @@ void MainWindow::createStatusBar() {
     connect(m_statusTimer, &QTimer::timeout, this, [this]() {
         showMessage(clear, "");
     });
+}
+
+// ---adapt svg icons to selected theme (light/dark)---
+void MainWindow::setIcons() {
+    ui->actionAbout->setIcon(createThemedIcon(":/toolbar/assets/mainTB_Info.svg"));
+    ui->actionQuit->setIcon(createThemedIcon(":/toolbar/assets/mainTB_Quit.svg"));
+    ui->actionOffline->setIcon(createThemedIcon(":/toolbar/assets/mainTB_EmbyOffline.svg"));
+    ui->actionDump->setIcon(createThemedIcon(":/toolbar/assets/mainTB_EmbyDump.svg"));
+    ui->actionExport->setIcon(createThemedIcon(":/toolbar/assets/mainTB_Export.svg"));
+    ui->actionRetrieve->setIcon(createThemedIcon(":/toolbar/assets/mainTB_Database.svg"));
+    ui->actionLogin->setIcon(createThemedIcon(":/toolbar/assets/mainTB_Person.svg"));
+    ui->actionSettings->setIcon(createThemedIcon(":/toolbar/assets/mainTB_Settings.svg"));
 }
 
 void MainWindow::setConnections() {
@@ -546,6 +551,15 @@ void MainWindow::closeEvent(QCloseEvent *e) {
     e->accept();
 }
 
+// ---react to theme changes---
+bool MainWindow::event(QEvent *event) {
+    if (event->type() == QEvent::ThemeChange) {
+        setIcons();
+        updateCollectionIcons();
+    }
+    return QMainWindow::event(event);
+}
+
 void MainWindow::enableFunctions() {
     AppSettings::AppPreferences settings = AppSettings::getSettings();
     bool b = !settings.host.isEmpty() &&
@@ -613,12 +627,12 @@ void MainWindow::loadSettings() {
 }
 
 QIcon MainWindow::getIconForCollectionType(const std::string& type) {
-    if (type == CollectionMovies) return QIcon(":/coll/assets/type_Movie.svg");
-    if (type == CollectionSeries) return QIcon(":/coll/assets/type_Series.svg");
-    if (type == CollectionHomeVideos) return QIcon(":/coll/assets/type_HomeVideo.svg");
-    if (type == CollectionMusicVideos) return QIcon(":/coll/assets/type_MusicVideo.svg");
-    if (type == CollectionMusic) return QIcon(":/coll/assets/type_Music.svg");
-    return QIcon(":/coll/assets/type_Folder.svg"); // fallback
+    if (type == CollectionMovies) return createThemedIcon(":/coll/assets/type_Movie.svg");
+    if (type == CollectionSeries) return createThemedIcon(":/coll/assets/type_Series.svg");
+    if (type == CollectionHomeVideos) return createThemedIcon(":/coll/assets/type_HomeVideo.svg");
+    if (type == CollectionMusicVideos) return createThemedIcon(":/coll/assets/type_MusicVideo.svg");
+    if (type == CollectionMusic) return createThemedIcon(":/coll/assets/type_Music.svg");
+    return createThemedIcon(":/coll/assets/type_Folder.svg"); // fallback
 }
 
 void MainWindow::showSplashScreen() {
@@ -736,19 +750,31 @@ void MainWindow::resetModelsAndUI() {
     m_splashDialog.show();
 }
 
+// ---react to theme changes---
+void MainWindow::updateCollectionIcons() {
+    for (int i = 0; i < m_collectionBox->count(); ++i) {
+        QVariant variant = m_collectionBox->itemData(i);
+        if (variant.canConvert<EmbyCollection>()) {
+            EmbyCollection e = variant.value<EmbyCollection>();
+            QIcon newIcon = getIconForCollectionType(toStandardString(e.type));
+            m_collectionBox->setItemIcon(i, newIcon);
+        }
+    }
+}
+
 void MainWindow::showMessage(msgStatus st, QString msg, int timeout) {
     if (!m_statusIcon || !m_statusText) return;
     m_statusText->setStyleSheet("color: palette(text); font-weight: normal;");
     QIcon icon;
     switch (st) {
     case information:
-        icon = QIcon(":/status/assets/status_Information.svg");
+        icon = createThemedIcon(":/status/assets/status_Information.svg");
         break;
     case warning:
-        icon = QIcon(":/status/assets/status_Warning.svg");
+        icon = createThemedIcon(":/status/assets/status_Warning.svg");
         break;
     case error:
-        icon = QIcon(":/status/assets/status_Error.svg");
+        icon = createThemedIcon(":/status/assets/status_Error.svg");
         m_statusText->setStyleSheet("color: red; font-weight: bold;");
         break;
     case clear:

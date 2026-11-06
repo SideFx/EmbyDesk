@@ -3,7 +3,7 @@
 // Purpose:     Popup to enter Emby server connection/login settings
 // Author:      Jan Buchholz
 // Created:     2026-04-23
-// Changed:     2026-05-08
+// Changed:     2026-11-06
 /////////////////////////////////////////////////////////////////////////////
 
 #include "preferencesdialog.h"
@@ -12,7 +12,9 @@
 
 PreferencesDialog::PreferencesDialog(QWidget *parent) : QDialog(parent), ui(new Ui::PreferencesDialog) {
     ui->setupUi(this);
-    setFixedSize(this->geometry().width(), this->geometry().height());
+    setAutoFillBackground(true);
+    adjustSize();
+    setFixedSize(size());
 }
 
 PreferencesDialog::~PreferencesDialog() {

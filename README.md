@@ -112,3 +112,7 @@ Popup "Dump Emby Collections"
 **2026-5-25:**
 - macOS, forgot to set unifiedTitleAndToolbar, fixed
 
+**2026-11-06:**
+- App now supports light and dark themes
+- On-the-fly theme switching
+- Refined stylesheets

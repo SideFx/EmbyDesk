@@ -3,7 +3,7 @@
 // Purpose:     Sheets for different Emby item types
 // Author:      Jan Buchholz
 // Created:     2026-05-01
-// Changed:     2026-05-21
+// Changed:     2026-11-06
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -112,17 +112,11 @@ public:
 };
 
 inline void finalizeSheet(QWidget* sheet) {
-    // ---get sheet color---
-    const QString bg = sheet->palette().color(QPalette::Window).name();
     // ---remove focus---
     sheet->setFocusPolicy(Qt::NoFocus);
-    // ---child controls remove focus & apply color---
+    // ---child controls remove focus---
     for (auto* child : sheet->findChildren<QWidget*>()) {
         child->setFocusPolicy(Qt::NoFocus);
-        if (qobject_cast<QListView*>(child) ||
-            qobject_cast<QTextBrowser*>(child)) {
-            child->setStyleSheet(child->styleSheet() + " background-color: " + bg + ";");
-        }
     }
 }
 

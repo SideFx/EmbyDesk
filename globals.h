@@ -3,7 +3,7 @@
 // Purpose:     Global constants, etc.
 // Author:      Jan Buchholz
 // Created:     2026-04-23
-// Changed:     2026-05-19
+// Changed:     2026-11-06
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -37,7 +37,7 @@
 #define SET_LAST_USED_DB "lastused-db"
 #define APP_COMPANY "org.jan.buchholz"
 #define APP_NAME "EmbyDesk"
-#define APP_VERSION "1.0"
+#define APP_VERSION "1.1"
 #define API_VERSION "1.1" // Go backend library
 
 // ---Default Emby server port---

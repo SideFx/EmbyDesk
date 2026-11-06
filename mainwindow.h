@@ -3,7 +3,7 @@
 // Purpose:     The main window
 // Author:      Jan Buchholz
 // Created:     2026-04-23
-// Changed:     2026-05-17
+// Changed:     2026-11-06
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -39,7 +39,7 @@ class MainWindow : public QMainWindow {
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow() override;
+    ~MainWindow();
 
 private:
     Ui::MainWindow* ui;
@@ -90,6 +90,7 @@ private:
     MusicTreeModel m_musicModel;
 
     enum msgStatus {information, warning, error, clear};
+    void setIcons();
     void createToolBar();
     void createMainControls();
     void createStatusBar();
@@ -97,6 +98,7 @@ private:
     void showSplashScreen();
     void closeEvent(QCloseEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
+    bool event(QEvent *event) override;
     void centerSplashDialog(SplashDialog& dlg);
     void saveSettings();
     void loadSettings();
@@ -104,6 +106,7 @@ private:
     void setProxyModels();
     void deleteModels();
     void resetModelsAndUI();
+    void updateCollectionIcons();
     void showMessage(msgStatus st, QString msg, int timeout = 0);
     QIcon getIconForCollectionType(const std::string& type);
     void loadSheetForItem(const QModelIndex &sourceIndex);

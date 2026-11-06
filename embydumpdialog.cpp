@@ -3,7 +3,7 @@
 // Purpose:    Popup to prepare and view progress of dump of Emby collections
 // Author:     Jan Buchholz
 // Created:    2026-05-09
-// Changed:    2026-05-21
+// Changed:    2026-11-06
 /////////////////////////////////////////////////////////////////////////////
 
 #include "embydumpdialog.h"
@@ -21,8 +21,7 @@ EmbyDumpDialog::EmbyDumpDialog(QWidget *parent) : QDialog(parent)
     , ui(new Ui::EmbyDumpDialog) {
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowCloseButtonHint);
-    setFixedSize(this->geometry().width(), this->geometry().height());
-    setWindowTitle(tr("Dump Emby Collections"));
+     setWindowTitle(tr("Dump Emby Collections"));
     m_btnDump = new QPushButton(this);
     m_btnDump->setVisible(true);
     m_btnDump->setEnabled(false);
@@ -36,6 +35,9 @@ EmbyDumpDialog::EmbyDumpDialog(QWidget *parent) : QDialog(parent)
     QFont mono = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     ui->edt_logger->setFont(mono);
     ui->edt_logger->setPlainText(c_msg + "\n");
+    setAutoFillBackground(true);
+    adjustSize();
+    setFixedSize(size());
     connect(ui->btn_select, &QPushButton::clicked, this, &EmbyDumpDialog::onSelect);
     connect(m_btnDump, &QPushButton::clicked, this, &EmbyDumpDialog::onDump);
     connect(ui->edt_path, &QLineEdit::textChanged, this, &EmbyDumpDialog::onTextChanged);
@@ -88,7 +90,7 @@ void EmbyDumpDialog::onDump() {
     worker->moveToThread(thread);
     connect(thread, &QThread::started, worker, &DumpWorker::run);
     connect(worker, &DumpWorker::log, this, &EmbyDumpDialog::logMessage);
-    connect(worker, &DumpWorker::finished, this, [=]() {
+    connect(worker, &DumpWorker::finished, this, [=, this]() {
         m_btnCancel->setText(tr("Close"));
         m_btnCancel->setEnabled(true);
         thread->quit();
