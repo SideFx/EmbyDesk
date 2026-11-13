@@ -3,6 +3,7 @@
 // Purpose:     App preferences
 // Author:      Jan Buchholz
 // Created:     2025-11-19
+// Changed:     2026-11-13
 /////////////////////////////////////////////////////////////////////////////
 
 #include "jbpreferences.h"
