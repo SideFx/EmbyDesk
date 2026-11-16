@@ -291,7 +291,7 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":name", toQString(m.name));
             q.bindValue(":original_title", toQString(m.originalTitle));
             q.bindValue(":production_year", m.productionYear);
-            q.bindValue(":runtime", m.runtime);
+            q.bindValue(":runtime", QVariant::fromValue(m.runtime));
             q.bindValue(":overview", toQString(m.overview));
             q.bindValue(":container", toQString(m.container));
             q.bindValue(":audio_codec", toQString(m.audioCodec));
@@ -299,10 +299,10 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":width", m.width);
             q.bindValue(":height", m.height);
             q.bindValue(":bitrate", m.bitrate);
-            q.bindValue(":file_size", m.fileSize);
+            q.bindValue(":file_size", QVariant::fromValue(m.fileSize));
             q.bindValue(":file_name", toQString(m.fileName));
             q.bindValue(":imdb_id", toQString(m.imDbId));
-            q.bindValue(":added_at", m.addedAt);
+            q.bindValue(":added_at", QVariant::fromValue(m.addedAt));
             q.bindValue(":folder_id", toQString(m.folderId));
             if (!q.exec()) {
                 emit log(tr("ERROR inserting into table 'movie' ") + lastDBError(q));
@@ -408,7 +408,7 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":original_title", toQString(s.originalTitle));
             q.bindValue(":production_year", s.productionYear);
             q.bindValue(":overview", toQString(s.overview));
-            q.bindValue(":added_at", s.addedAt);
+            q.bindValue(":added_at", QVariant::fromValue(s.addedAt));
             q.bindValue(":imdb_id", toQString(s.imDbId));
             if (!q.exec()) {
                 emit log(tr("ERROR inserting into table 'series' ") + lastDBError(q));
@@ -494,8 +494,8 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":id", toQString(s.seasonId));
             q.bindValue(":name", toQString(s.name));
             q.bindValue(":production_year", s.productionYear);
-            q.bindValue(":runtime", s.runtime);
-            q.bindValue(":added_at", s.addedAt);
+            q.bindValue(":runtime", QVariant::fromValue(s.runtime));
+            q.bindValue(":added_at", QVariant::fromValue(s.addedAt));
             q.bindValue(":sort_index", s.sortIndex);
             if (!q.exec()) {
                 emit log(tr("ERROR inserting into table 'season' ") + lastDBError(q));
@@ -544,7 +544,7 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":name", toQString(e.name));
             q.bindValue(":original_title", toQString(e.originalTitle));
             q.bindValue(":production_year", e.productionYear);
-            q.bindValue(":runtime", e.runtime);
+            q.bindValue(":runtime", QVariant::fromValue(e.runtime));
             q.bindValue(":overview", toQString(e.overview));
             q.bindValue(":container", toQString(e.container));
             q.bindValue(":audio_codec", toQString(e.audioCodec));
@@ -552,9 +552,9 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":width", e.width);
             q.bindValue(":height", e.height);
             q.bindValue(":bitrate", e.bitrate);
-            q.bindValue(":file_size", e.fileSize);
+            q.bindValue(":file_size", QVariant::fromValue(e.fileSize));
             q.bindValue(":file_name", toQString(e.fileName));
-            q.bindValue(":added_at", e.addedAt);
+            q.bindValue(":added_at", QVariant::fromValue(e.addedAt));
             q.bindValue(":imdb_id", toQString(e.imDbId));
             q.bindValue(":sort_index", e.sortIndex);
             if (!q.exec()) {
@@ -633,7 +633,7 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":id", toQString(v.videoId));
             q.bindValue(":name", toQString(v.name));
             q.bindValue(":production_year", v.productionYear);
-            q.bindValue(":runtime", v.runtime);
+            q.bindValue(":runtime", QVariant::fromValue(v.runtime));
             q.bindValue(":overview", toQString(v.overview));
             q.bindValue(":container", toQString(v.container));
             q.bindValue(":audio_codec", toQString(v.audioCodec));
@@ -641,9 +641,9 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":width", v.width);
             q.bindValue(":height", v.height);
             q.bindValue(":bitrate", v.bitrate);
-            q.bindValue(":file_size", v.fileSize);
+            q.bindValue(":file_size", QVariant::fromValue(v.fileSize));
             q.bindValue(":file_name", toQString(v.fileName));
-            q.bindValue(":added_at", v.addedAt);
+            q.bindValue(":added_at", QVariant::fromValue(v.addedAt));
             q.bindValue(":folder_id", toQString(v.folderId));
             if (!q.exec()) {
                 emit log(tr("ERROR inserting into table 'homevideo' ") + lastDBError(q));
@@ -731,7 +731,7 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":id", toQString(v.videoId));
             q.bindValue(":name", toQString(v.name));
             q.bindValue(":production_year", v.productionYear);
-            q.bindValue(":runtime", v.runtime);
+            q.bindValue(":runtime", QVariant::fromValue(v.runtime));
             q.bindValue(":overview", toQString(v.overview));
             q.bindValue(":container", toQString(v.container));
             q.bindValue(":audio_codec", toQString(v.audioCodec));
@@ -739,9 +739,9 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":width", v.width);
             q.bindValue(":height", v.height);
             q.bindValue(":bitrate", v.bitrate);
-            q.bindValue(":file_size", v.fileSize);
+            q.bindValue(":file_size", QVariant::fromValue(v.fileSize));
             q.bindValue(":file_name", toQString(v.fileName));
-            q.bindValue(":added_at", v.addedAt);
+            q.bindValue(":added_at", QVariant::fromValue(v.addedAt));
             q.bindValue(":folder_id", toQString(v.folderId));
             if (!q.exec()) {
                 emit log(tr("ERROR inserting into table 'musicvideo' ") + lastDBError(q));
@@ -827,10 +827,10 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":id", toQString(a.albumId));
             q.bindValue(":name", toQString(a.name));
             q.bindValue(":production_year", a.productionYear);
-            q.bindValue(":runtime", a.runtime);
+            q.bindValue(":runtime", QVariant::fromValue(a.runtime));
             q.bindValue(":album_artist", toQString(a.albumArtist));
-            q.bindValue(":runtime", a.runtime);
-            q.bindValue(":added_at", a.addedAt);
+            q.bindValue(":runtime", QVariant::fromValue(a.runtime));
+            q.bindValue(":added_at", QVariant::fromValue(a.addedAt));
             q.bindValue(":musicbrainz_id", toQString(a.musicBrainzId));
             if (!q.exec()) {
                 emit log(tr("ERROR inserting into table 'album' ") + lastDBError(q));
@@ -904,13 +904,13 @@ bool DumpWorker::processCollection(UserView& view) {
             q.bindValue(":production_year", a.productionYear);
             q.bindValue(":album", toQString(a.album));
             q.bindValue(":album_artist", toQString(a.albumArtist));
-            q.bindValue(":runtime", a.runtime);
+            q.bindValue(":runtime", QVariant::fromValue(a.runtime));
             q.bindValue(":container", toQString(a.container));
             q.bindValue(":audio_codec", toQString(a.audioCodec));
             q.bindValue(":bitrate", a.bitrate);
-            q.bindValue(":file_size", a.fileSize);
+            q.bindValue(":file_size", QVariant::fromValue(a.fileSize));
             q.bindValue(":file_name", toQString(a.fileName));
-            q.bindValue(":added_at", a.addedAt);
+            q.bindValue(":added_at", QVariant::fromValue(a.addedAt));
             q.bindValue(":media_type", toQString(a.mediaType));
             if (!q.exec()) {
                 emit log(tr("ERROR inserting into table 'audio' ") + lastDBError(q));

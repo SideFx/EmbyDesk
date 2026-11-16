@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(QT_NO_PRIVATE_MODULE_WARNING ON)
-find_package(Qt6 6.11 REQUIRED COMPONENTS Core Widgets Svg Sql GuiPrivate)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Svg Sql GuiPrivate)
 
 qt_standard_project_setup()
 add_subdirectory(extern/JBEmbyAPI/cpp-client/)

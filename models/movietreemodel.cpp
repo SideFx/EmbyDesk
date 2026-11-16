@@ -78,7 +78,7 @@ QVariant MovieTreeModel::data(const QModelIndex& index, int role) const {
         switch (index.column()) {
             case Name: return toQString(movie->data.name);
             case Year: return movie->data.productionYear;
-            case Runtime: return movie->data.runtime;
+            case Runtime: return QVariant::fromValue(movie->data.runtime);
             case Container: return toQString(movie->data.container);
             case VideoCodec: return toQString(movie->data.videoCodec);
             case AudioCodec: return toQString(movie->data.audioCodec);
@@ -86,9 +86,9 @@ QVariant MovieTreeModel::data(const QModelIndex& index, int role) const {
             case Bitrate: return movie->data.bitrate;
             case ImDBId: return toQString(movie->data.imDbId);
             case FolderName: return toQString(movie->folderName);
-            case FileSize: return movie->data.fileSize;
+            case FileSize: return QVariant::fromValue(movie->data.fileSize);
             case FileName: return toQString(movie->data.fileName);
-            case AddedAt: return movie->data.addedAt;
+            case AddedAt: return QVariant::fromValue(movie->data.addedAt);
         }
     }
     if (role == Qt::TextAlignmentRole) {

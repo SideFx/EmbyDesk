@@ -77,16 +77,16 @@ QVariant HomeVideoTreeModel::data(const QModelIndex& index, int role) const {
         switch (index.column()) {
             case Name:       return toQString(video->data.name);
             case Year:       return video->data.productionYear;
-            case Runtime:    return video->data.runtime;
+            case Runtime:    return QVariant::fromValue(video->data.runtime);
             case Container:  return toQString(video->data.container);
             case VideoCodec: return toQString(video->data.videoCodec);
             case AudioCodec: return toQString(video->data.audioCodec);
             case Resolution: return resolutionKey(video->data.width, video->data.height);
             case Bitrate:    return video->data.bitrate;
             case FolderName: return toQString(video->folderName);
-            case FileSize:   return video->data.fileSize;
+            case FileSize:   return QVariant::fromValue(video->data.fileSize);
             case FileName:   return toQString(video->data.fileName);
-            case AddedAt:    return video->data.addedAt;
+            case AddedAt:    return QVariant::fromValue(video->data.addedAt);
         }
     }
     if (role == Qt::TextAlignmentRole) {
