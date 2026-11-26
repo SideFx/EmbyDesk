@@ -24,7 +24,7 @@ qt_add_executable(${PROJECT_NAME}
     mainwindow.ui
     conversions.hpp
     app.icns app.ico appicon.rc
-    jbstyles.hpp
+
     globals.h
     ${CMAKE_CURRENT_SOURCE_DIR}/resource.qrc
     jbpreferences.cpp jbpreferences.h preferencesdialog.cpp preferencesdialog.h preferencesdialog.ui
@@ -49,6 +49,7 @@ qt_add_executable(${PROJECT_NAME}
     sqlreturntypes.h
     models/statistics.h
     Info.plist.in
+    thememanager.hpp
 
 )
 

@@ -23,7 +23,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>33</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
@@ -137,6 +137,21 @@
    </property>
    <property name="toolTip">
     <string>Offline Mode (Use local Database)</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionTheme">
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/toolbar/assets/mainTB_Theme.svg</normaloff>:/toolbar/assets/mainTB_Theme.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Switch theme</string>
+   </property>
+   <property name="toolTip">
+    <string>Switch between light and dark mode</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>

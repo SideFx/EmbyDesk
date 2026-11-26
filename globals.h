@@ -3,7 +3,7 @@
 // Purpose:     Global constants, etc.
 // Author:      Jan Buchholz
 // Created:     2026-04-23
-// Changed:     2026-11-06
+// Changed:     2026-11-26
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -22,6 +22,7 @@
 #define SET_EMBY_USERNAME "emby-username"
 #define SET_EMBY_PASSWORD "emby-password"
 #define SET_EMBY_SECURE "emby-secure"
+#define SET_THEME "options/theme"
 
 #define SET_MAX_ACTORS "export-actors-max"
 #define SET_LIM_ACTORS "export-actors-limit"
@@ -37,7 +38,7 @@
 #define SET_LAST_USED_DB "lastused-db"
 #define APP_COMPANY "org.jan.buchholz"
 #define APP_NAME "EmbyDesk"
-#define APP_VERSION "1.1"
+#define APP_VERSION "1.2"
 #define API_VERSION "1.1" // Go backend library
 
 // ---Default Emby server port---
@@ -48,7 +49,7 @@ int constexpr DEF_MSG_DURATION = 8000;
 
 // ---Toolbar---
 int constexpr DEF_ICONSIZE = 16;
-int constexpr DEF_TOOLBAR_HEIGHT = DEF_ICONSIZE + 10;
+int constexpr DEF_TOOLBAR_HEIGHT = 30;
 
 // ---Min. main window size---
 inline QSize const DEF_WINDOW_MINSIZE = QSize(800, 600);

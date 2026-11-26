@@ -115,4 +115,7 @@ Popup "Dump Emby Collections"
 **2026-11-06:**
 - App now supports light and dark themes
 - On-the-fly theme switching
-- Refined stylesheets
+
+**2026-11-26:**
+- Implemented a theme manager to switch between light/dark palette and redraw the svg icons
+

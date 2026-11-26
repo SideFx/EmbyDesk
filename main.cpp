@@ -3,7 +3,7 @@
 // Purpose:     Main, load Go library, apply style
 // Author:      Jan Buchholz
 // Created:     2026-04-23
-// Changed:     2026-11-06
+// Changed:     2026-11-26
 /////////////////////////////////////////////////////////////////////////////
 
 #include "mainwindow.h"
@@ -16,11 +16,7 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     GoLib api;
     if (!api.load()) return -1; // LoadLibrary("jbembyapi")
-#if defined (Q_OS_WIN)
-    a.setStyle(QStyleFactory::create("fusion"));
-#elif defined (Q_OS_MACOS)
-    a.setStyle(QStyleFactory::create("macos"));
-#endif
+    a.setStyle(QStyleFactory::create("Fusion"));
     qRegisterMetaType<EmbyCollection>("embyCollection");
     APICall::setAPI(&api);
     MainWindow w;

@@ -10,6 +10,7 @@
         <file>assets/mainTB_Person.svg</file>
         <file>assets/mainTB_EmbyDump.svg</file>
         <file>assets/mainTB_EmbyOffline.svg</file>
+        <file>assets/mainTB_Theme.svg</file>
     </qresource>
     <qresource prefix="/bitmaps">
         <file>assets/emby.png</file>

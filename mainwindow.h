@@ -3,7 +3,7 @@
 // Purpose:     The main window
 // Author:      Jan Buchholz
 // Created:     2026-04-23
-// Changed:     2026-11-06
+// Changed:     2026-11-26
 /////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -90,7 +90,6 @@ private:
     MusicTreeModel m_musicModel;
 
     enum msgStatus {information, warning, error, clear};
-    void setIcons();
     void createToolBar();
     void createMainControls();
     void createStatusBar();
@@ -98,7 +97,6 @@ private:
     void showSplashScreen();
     void closeEvent(QCloseEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
-    bool event(QEvent *event) override;
     void centerSplashDialog(SplashDialog& dlg);
     void saveSettings();
     void loadSettings();
@@ -120,6 +118,7 @@ private slots:
     void onActionQuit();
     void onActionDump();
     void onActionOffline();
+    void onActionTheme();
     // ---tree line selection---
     void onCurrentChanged(const QModelIndex&,  const QModelIndex&);
     // ---collection dropdown box---

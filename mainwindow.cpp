@@ -3,12 +3,11 @@
 // Purpose:     The main window
 // Author:      Jan Buchholz
 // Created:     2026-04-23
-// Changed:     2026-11-06
+// Changed:     2026-11-26
 /////////////////////////////////////////////////////////////////////////////
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "jbstyles.hpp"
 #include "preferencesdialog.h"
 #include "jbpreferences.h"
 #include "conversions.hpp"
@@ -21,6 +20,7 @@
 #include <QStandardPaths>
 #include "excelexport.h"
 #include "appsettings.h"
+#include "thememanager.hpp"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           ui(new Ui::MainWindow),
@@ -30,7 +30,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     setAutoFillBackground(true);
     setWindowTitle(QString(APP_NAME) + " v" + APP_VERSION);
     setMinimumSize(DEF_WINDOW_MINSIZE);
-    setIcons();
     createToolBar();
     createMainControls();
     createStatusBar();
@@ -52,24 +51,29 @@ MainWindow::~MainWindow() {
 void MainWindow::createToolBar() {
     m_mainToolBar = new QToolBar(this);
     m_mainToolBar->setObjectName("mainToolBar");
-    m_mainToolBar->setStyleSheet(styleToolBar);
     m_mainToolBar->setMovable(false);
     m_mainToolBar->setOrientation(Qt::Horizontal);
-    m_mainToolBar->setAutoFillBackground(false);
+    m_mainToolBar->setAutoFillBackground(true);
     m_mainToolBar->setIconSize(QSize(DEF_ICONSIZE, DEF_ICONSIZE));
     m_mainToolBar->setFixedHeight(DEF_TOOLBAR_HEIGHT);
     m_mainToolBar->addAction(ui->actionSettings);
+    ThemeManager::registerActionIcon(ui->actionSettings, ":/toolbar/assets/mainTB_Settings.svg");
     m_mainToolBar->addAction(ui->actionLogin);
+    ThemeManager::registerActionIcon(ui->actionLogin, ":/toolbar/assets/mainTB_Person.svg");
     m_mainToolBar->addSeparator();
     m_collectionBox = new QComboBox;
     m_collectionBox->setMinimumWidth(180);
     m_mainToolBar->addWidget(m_collectionBox);
     m_mainToolBar->addSeparator();
     m_mainToolBar->addAction(ui->actionRetrieve);
+    ThemeManager::registerActionIcon(ui->actionRetrieve, ":/toolbar/assets/mainTB_Database.svg");
     m_mainToolBar->addAction(ui->actionExport);
+    ThemeManager::registerActionIcon(ui->actionExport, ":/toolbar/assets/mainTB_Export.svg");
     m_mainToolBar->addSeparator();
     m_mainToolBar->addAction((ui->actionDump));
+    ThemeManager::registerActionIcon(ui->actionDump, ":/toolbar/assets/mainTB_EmbyDump.svg");
     m_mainToolBar->addAction(ui->actionOffline);
+    ThemeManager::registerActionIcon(ui->actionOffline, ":/toolbar/assets/mainTB_EmbyOffline.svg");
     QWidget* spacerSmall = new QWidget;
     spacerSmall->setMinimumWidth(10);
     m_mainToolBar->addWidget(spacerSmall);
@@ -79,8 +83,12 @@ void MainWindow::createToolBar() {
     QWidget* spacerLarge = new QWidget;
     spacerLarge->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     m_mainToolBar->addWidget(spacerLarge);
+    m_mainToolBar->addAction(ui->actionTheme);
+    ThemeManager::registerActionIcon(ui->actionTheme, ":/toolbar/assets/mainTB_Theme.svg");
     m_mainToolBar->addAction(ui->actionAbout);
+    ThemeManager::registerActionIcon(ui->actionAbout, ":/toolbar/assets/mainTB_Info.svg");
     m_mainToolBar->addAction(ui->actionQuit);
+    ThemeManager::registerActionIcon(ui->actionQuit, ":/toolbar/assets/mainTB_Quit.svg");
     this->addToolBar(Qt::TopToolBarArea, m_mainToolBar);
 }
 
@@ -88,7 +96,7 @@ void MainWindow::createMainControls() {
     m_mainSplitter = new QSplitter(this);
     m_mainSplitter->setObjectName("mainSplitter");
     m_mainSplitter->setOrientation(Qt::Horizontal);
-    m_mainSplitter->setStyleSheet(styleSplitterHandle);
+    m_mainSplitter->setAutoFillBackground(true);
     m_tree = new QTreeView(m_mainSplitter);
     m_tree->setAlternatingRowColors(true);
     m_tree->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -122,7 +130,7 @@ void MainWindow::createMainControls() {
 
 void MainWindow::createStatusBar() {
     m_statusBar = new QStatusBar(this);
-    m_statusBar->setStyleSheet(styleStatusBar);
+    m_statusBar->setAutoFillBackground(true);
     auto* container = new QWidget(this);
     auto* layout = new QHBoxLayout(container);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -142,18 +150,6 @@ void MainWindow::createStatusBar() {
     });
 }
 
-// ---adapt svg icons to selected theme (light/dark)---
-void MainWindow::setIcons() {
-    ui->actionAbout->setIcon(createThemedIcon(":/toolbar/assets/mainTB_Info.svg"));
-    ui->actionQuit->setIcon(createThemedIcon(":/toolbar/assets/mainTB_Quit.svg"));
-    ui->actionOffline->setIcon(createThemedIcon(":/toolbar/assets/mainTB_EmbyOffline.svg"));
-    ui->actionDump->setIcon(createThemedIcon(":/toolbar/assets/mainTB_EmbyDump.svg"));
-    ui->actionExport->setIcon(createThemedIcon(":/toolbar/assets/mainTB_Export.svg"));
-    ui->actionRetrieve->setIcon(createThemedIcon(":/toolbar/assets/mainTB_Database.svg"));
-    ui->actionLogin->setIcon(createThemedIcon(":/toolbar/assets/mainTB_Person.svg"));
-    ui->actionSettings->setIcon(createThemedIcon(":/toolbar/assets/mainTB_Settings.svg"));
-}
-
 void MainWindow::setConnections() {
     // ---Toolbar Buttons---
     connect(ui->actionQuit, &QAction::triggered, this, &MainWindow::onActionQuit);
@@ -164,6 +160,7 @@ void MainWindow::setConnections() {
     connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::onActionAbout);
     connect(ui->actionDump, &QAction::triggered, this, &MainWindow::onActionDump);
     connect(ui->actionOffline, &QAction::triggered, this, &MainWindow::onActionOffline);
+    connect(ui->actionTheme, &QAction::triggered, this, &MainWindow::onActionTheme);
     // ---Collections ComboBox---
     connect(m_collectionBox, &QComboBox::currentIndexChanged, this, &MainWindow::onCollectionChanged);
     // ---Tree, automagically select row on expand/collapse---
@@ -543,6 +540,12 @@ void MainWindow::onCurrentChanged(const QModelIndex& current, const QModelIndex&
     loadSheetForItem(current);
 }
 
+void MainWindow::onActionTheme() {
+    ThemeManager::Theme newTheme = (ThemeManager::getTheme() == ThemeManager::Theme::Dark)
+    ? ThemeManager::Theme::Light : ThemeManager::Theme::Dark;
+    ThemeManager::applyTheme(newTheme);
+}
+
 void MainWindow::resizeEvent(QResizeEvent *e) {
     if (m_splashDialog.isVisible()) centerSplashDialog(m_splashDialog);
 }
@@ -550,15 +553,6 @@ void MainWindow::resizeEvent(QResizeEvent *e) {
 void MainWindow::closeEvent(QCloseEvent *e) {
     saveSettings();
     e->accept();
-}
-
-// ---react to theme changes---
-bool MainWindow::event(QEvent *event) {
-    if (event->type() == QEvent::ThemeChange) {
-        setIcons();
-        updateCollectionIcons();
-    }
-    return QMainWindow::event(event);
 }
 
 void MainWindow::enableFunctions() {
@@ -596,6 +590,7 @@ void MainWindow::saveSettings() {
     prefs.PushBoolean(SET_LIM_DIRECTORS, settings.limit_directors);
     prefs.PushBoolean(SET_LIM_GENRES, settings.limit_genres);
     prefs.PushBoolean(SET_LIM_STUDIOS, settings.limit_studios);
+    prefs.PushNumber(SET_THEME, static_cast<int>(ThemeManager::getTheme()));
     prefs.SavePreferencesToDefaultLocation(APP_COMPANY, APP_NAME);
 }
 
@@ -603,37 +598,42 @@ void MainWindow::loadSettings() {
     JBPreferences prefs;
     AppSettings::AppPreferences settings;
     if (prefs.LoadPreferencesFromDefaultLocation(APP_COMPANY, APP_NAME)) {
-        restoreGeometry(prefs.PopArray(SET_WINDOW_GEOMETRY));
-        restoreState(prefs.PopArray(SET_WINDOW_STATE));
-        settings = {
-            .secure = prefs.PopBoolean(SET_EMBY_SECURE),
-            .host = prefs.PopString(SET_EMBY_ADDRESS),
-            .port = prefs.PopString(SET_EMBY_PORT),
-            .userName = prefs.PopString(SET_EMBY_USERNAME),
-            .userPw = prefs.PopString(SET_EMBY_PASSWORD),
-            .max_actors = static_cast<int>(prefs.PopNumber(SET_MAX_ACTORS)),
-            .max_directors = static_cast<int>(prefs.PopNumber(SET_MAX_DIRECTORS)),
-            .max_studios = static_cast<int>(prefs.PopNumber(SET_MAX_STUDIOS)),
-            .max_genres = static_cast<int>(prefs.PopNumber(SET_MAX_GENRES)),
-            .limit_actors = prefs.PopBoolean(SET_LIM_ACTORS),
-            .limit_directors = prefs.PopBoolean(SET_LIM_DIRECTORS),
-            .limit_studios = prefs.PopBoolean(SET_LIM_STUDIOS),
-            .limit_genres = prefs.PopBoolean(SET_LIM_STUDIOS),
-        };
+        try {
+            restoreGeometry(prefs.PopArray(SET_WINDOW_GEOMETRY));
+            restoreState(prefs.PopArray(SET_WINDOW_STATE));
+            settings = {
+                .secure = prefs.PopBoolean(SET_EMBY_SECURE),
+                .host = prefs.PopString(SET_EMBY_ADDRESS),
+                .port = prefs.PopString(SET_EMBY_PORT),
+                .userName = prefs.PopString(SET_EMBY_USERNAME),
+                .userPw = prefs.PopString(SET_EMBY_PASSWORD),
+                .max_actors = static_cast<int>(prefs.PopNumber(SET_MAX_ACTORS)),
+                .max_directors = static_cast<int>(prefs.PopNumber(SET_MAX_DIRECTORS)),
+                .max_studios = static_cast<int>(prefs.PopNumber(SET_MAX_STUDIOS)),
+                .max_genres = static_cast<int>(prefs.PopNumber(SET_MAX_GENRES)),
+                .limit_actors = prefs.PopBoolean(SET_LIM_ACTORS),
+                .limit_directors = prefs.PopBoolean(SET_LIM_DIRECTORS),
+                .limit_studios = prefs.PopBoolean(SET_LIM_STUDIOS),
+                .limit_genres = prefs.PopBoolean(SET_LIM_STUDIOS),
+            };
+            AppSettings::setSettings(settings);
+            ThemeManager::Theme theme = static_cast<ThemeManager::Theme>(prefs.PopNumber(SET_THEME));
+            ThemeManager::applyTheme(theme);
+        }
+        catch (...) {}
         m_lastFolderXlsx = prefs.PopString(SET_FOLDER_XLSX);
         m_lastFolderDb = prefs.PopString(SET_FOLDER_DB);
         m_lastUsedDb = prefs.PopString(SET_LAST_USED_DB);
-        AppSettings::setSettings(settings);
     }
 }
 
 QIcon MainWindow::getIconForCollectionType(const std::string& type) {
-    if (type == CollectionMovies) return createThemedIcon(":/coll/assets/type_Movie.svg");
-    if (type == CollectionSeries) return createThemedIcon(":/coll/assets/type_Series.svg");
-    if (type == CollectionHomeVideos) return createThemedIcon(":/coll/assets/type_HomeVideo.svg");
-    if (type == CollectionMusicVideos) return createThemedIcon(":/coll/assets/type_MusicVideo.svg");
-    if (type == CollectionMusic) return createThemedIcon(":/coll/assets/type_Music.svg");
-    return createThemedIcon(":/coll/assets/type_Folder.svg"); // fallback
+    if (type == CollectionMovies) return ThemeManager::createThemedIcon(":/coll/assets/type_Movie.svg");
+    if (type == CollectionSeries) return ThemeManager::createThemedIcon(":/coll/assets/type_Series.svg");
+    if (type == CollectionHomeVideos) return ThemeManager::createThemedIcon(":/coll/assets/type_HomeVideo.svg");
+    if (type == CollectionMusicVideos) return ThemeManager::createThemedIcon(":/coll/assets/type_MusicVideo.svg");
+    if (type == CollectionMusic) return ThemeManager::createThemedIcon(":/coll/assets/type_Music.svg");
+    return ThemeManager::createThemedIcon(":/coll/assets/type_Folder.svg"); // fallback
 }
 
 void MainWindow::showSplashScreen() {
@@ -769,13 +769,13 @@ void MainWindow::showMessage(msgStatus st, QString msg, int timeout) {
     QIcon icon;
     switch (st) {
     case information:
-        icon = createThemedIcon(":/status/assets/status_Information.svg");
+        icon = ThemeManager::createThemedIcon(":/status/assets/status_Information.svg");
         break;
     case warning:
-        icon = createThemedIcon(":/status/assets/status_Warning.svg");
+        icon = ThemeManager::createThemedIcon(":/status/assets/status_Warning.svg");
         break;
     case error:
-        icon = createThemedIcon(":/status/assets/status_Error.svg");
+        icon = ThemeManager::createThemedIcon(":/status/assets/status_Error.svg");
         m_statusText->setStyleSheet("color: red; font-weight: bold;");
         break;
     case clear:
