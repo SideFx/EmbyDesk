@@ -29,4 +29,7 @@
         <file>assets/status_Information.svg</file>
         <file>assets/status_Warning.svg</file>
     </qresource>
+    <qresource prefix="/logo">
+        <file>assets/emby.svg</file>
+    </qresource>
 </RCC>

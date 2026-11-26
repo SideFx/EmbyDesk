@@ -28,6 +28,9 @@ public:
 
     static Theme getTheme() {return m_theme;}
     static void setTheme(Theme th) {m_theme = th;}
+    static const QPalette getPalette() {
+        return (m_theme == Theme::Dark) ? m_darkPalette : m_lightPalette;
+    }
 
     static QPalette createLightPalette() {
         QPalette p;
@@ -139,7 +142,7 @@ public:
     static void applyTheme(Theme theme) {
         m_theme = theme;
         // globally set palette
-        const QPalette palette = (m_theme == Theme::Dark) ? createDarkPalette() : createLightPalette();
+        const QPalette palette = getPalette();
         QApplication::setPalette(palette);
         // redraw everything
         const auto widgets = QApplication::allWidgets(); // because of: c++11 range-loop might detach Qt container
@@ -186,6 +189,8 @@ private:
         QString resourcePath;
     };
     inline static QList<ThemedIconEntry> m_themedIcons;
+    inline static QPalette m_darkPalette = createDarkPalette();
+    inline static QPalette m_lightPalette = createLightPalette();
 };
 
 

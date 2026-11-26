@@ -98,6 +98,7 @@ private:
     void closeEvent(QCloseEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
     void centerSplashDialog(SplashDialog& dlg);
+    void hideSplitterContent(bool hide);
     void saveSettings();
     void loadSettings();
     void enableFunctions();

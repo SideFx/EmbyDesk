@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           m_jbImageCache(m_sqlReader) {
     ui->setupUi(this);
     setAutoFillBackground(true);
+    setAttribute(Qt::WA_StyledBackground, true);
     setWindowTitle(QString(APP_NAME) + " v" + APP_VERSION);
     setMinimumSize(DEF_WINDOW_MINSIZE);
     createToolBar();
@@ -125,7 +126,12 @@ void MainWindow::createMainControls() {
     m_sheets->setFixedWidth(DEF_SHEET_WIDTH);
     m_mainSplitter->setHandleWidth(0);
     m_mainSplitter->setChildrenCollapsible(false);
-    m_mainSplitter->setVisible(false);
+    hideSplitterContent(true);
+}
+
+void MainWindow::hideSplitterContent(bool hide) {
+    m_tree->setVisible(!hide);
+    m_sheets->setVisible(!hide);
 }
 
 void MainWindow::createStatusBar() {
@@ -378,7 +384,7 @@ void MainWindow::onActionRetrieve() {
         m_tree->header()->setStretchLastSection(true);
         for (int c = 0; c < cols; ++c) m_tree->resizeColumnToContents(c);
         m_splashDialog.hide();
-        m_mainSplitter->setVisible(true);
+        hideSplitterContent(false);
         ui->actionExport->setEnabled(true);
     }
     m_tree->setFocus();
@@ -521,7 +527,7 @@ void MainWindow::onActionQuit() {
 void MainWindow::onCollectionChanged(int index) {
     if (index < 0) return;
     m_splashDialog.show();
-    m_mainSplitter->setVisible(false);
+    hideSplitterContent(true);
     m_itemCount = 0;
     m_stats->setText("");
     m_collection = m_collectionBox->itemData(index).value<EmbyCollection>();
@@ -747,7 +753,8 @@ void MainWindow::resetModelsAndUI() {
     m_collectionBox->clear();
     m_collection = {};
     m_itemCount = 0;
-    m_mainSplitter->setVisible(false);
+    //m_mainSplitter->setVisible(false);
+    hideSplitterContent(true);
     m_splashDialog.show();
 }
 
