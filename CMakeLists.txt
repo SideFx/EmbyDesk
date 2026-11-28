@@ -102,7 +102,7 @@ install(TARGETS ${PROJECT_NAME}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-if(APPLE)
+if(APPLE AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/debug_entitlements.plist
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://apple.com\">\n"
